@@ -357,6 +357,10 @@ class WebApiPlayer:
         self.state.position_ms = int(data.get("progress_ms") or 0)
         self.state.status = (PlaybackStatus.PLAYING if data.get("is_playing")
                              else PlaybackStatus.PAUSED)
+        self.state.shuffle = bool(data.get("shuffle_state", self.state.shuffle))
+        rs = data.get("repeat_state")
+        if rs in ("off", "track", "context"):
+            self.state.repeat = RepeatMode(rs)
         dev = data.get("device") or {}
         if dev.get("id"):
             self._device_id = dev["id"]
@@ -413,8 +417,17 @@ class WebApiPlayer:
             self._cmds.put(lambda: self.web.play_context(
                 uri, device_id=self._ensure_device(), offset_position=index))
 
-    def toggle_shuffle(self) -> None: pass
-    def cycle_repeat(self) -> None: pass
+    def toggle_shuffle(self) -> None:
+        self.state.shuffle = not self.state.shuffle
+        s = self.state.shuffle
+        self._cmds.put(lambda: self.web.set_shuffle(s))
+
+    def cycle_repeat(self) -> None:
+        order = [RepeatMode.OFF, RepeatMode.CONTEXT, RepeatMode.TRACK]
+        self.state.repeat = order[(order.index(self.state.repeat) + 1) % len(order)]
+        m = self.state.repeat.value
+        self._cmds.put(lambda: self.web.set_repeat(m))
+
     def set_eq_band(self, band: int, gain_db: float) -> None:
         self.state.eq_bands[band] = gain_db
     def close(self) -> None:

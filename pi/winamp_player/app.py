@@ -27,6 +27,7 @@ from .controls import (
 from .images import ImageCache
 from .library import BrowseState, make_library
 from .models import EQ_BANDS, PlaybackStatus, Track
+from .power import make_battery
 from .spotify import make_backend
 from .spotify_web import make_web
 from .ui.display import Display
@@ -62,6 +63,9 @@ class App:
             self.library.start()
         else:
             print(f"[library] {msg} — using demo playlist")
+
+        self.battery = make_battery(cfg)
+        self._battery_accum = 99.0           # read on first frame
 
         self._grabbed: set[int] = set()      # fader ids the user is touching
         self._last_sent: dict[int, int] = {}  # last target per fader (avoid spam)
@@ -164,6 +168,31 @@ class App:
                 print(f"[library] {payload}")
 
     # ------------------------------------------------------------------ #
+    # battery
+    # ------------------------------------------------------------------ #
+    def _read_battery(self, dt: float) -> None:
+        if not self.battery:
+            return
+        self._battery_accum += dt
+        if self._battery_accum < 2.0:
+            return
+        self._battery_accum = 0.0
+        bs = self.battery.read()
+        st = self.backend.state
+        if bs is None:
+            st.battery_percent = None
+            return
+        st.battery_percent = bs.percent
+        st.battery_charging = bs.charging
+        # Clean shutdown on critical battery — real hardware only, opt-in only,
+        # so a laptop in "mock" mode can never trigger it.
+        if (self.cfg.battery_low_shutdown and self.cfg.battery == "x728"
+                and not bs.charging and bs.percent <= 5.0):
+            print("[power] battery critically low — shutting down")
+            import os
+            os.system("sudo shutdown -h now")
+
+    # ------------------------------------------------------------------ #
     # physical controls -> actions
     # ------------------------------------------------------------------ #
     def _handle_control_event(self, ev: ControlEvent) -> None:
@@ -228,6 +257,7 @@ class App:
                 self._handle_control_event(ev)
             self._pump_library()
             self.images.pump()
+            self._read_battery(dt)
             self.backend.poll()
             self._sync_motors()
             self.display.update(self.backend.state, dt)

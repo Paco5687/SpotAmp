@@ -52,6 +52,12 @@ Why a HAT and not a bare pack: you get **cell protection, a proven 5 V boost
 rated for Pi 4 peaks, charge management, and I2C monitoring** in one board — the
 hard, safety-critical parts done right.
 
+**Decision (v1): Geekworm X728.** Its MAX17040 fuel gauge (I2C `0x36`) is what
+`pi/winamp_player/power.py` (`X728Battery`) reads for the on-screen meter and
+safe shutdown; it has documented shutdown scripts and AC-loss detection. Waveshare
+UPS HAT (B) remains a drop-in alternative — swap the reader class if you use it.
+For more runtime, feed a larger 18650 pack (4–6 cells) to the board's terminals.
+
 ## 3. Sizing the battery ("large" is the goal)
 
 18650 cell ≈ 3500 mAh @ 3.6 V ≈ **12.6 Wh** raw. After boost efficiency (~90 %)

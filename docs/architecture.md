@@ -15,6 +15,19 @@ steady ~1 kHz to keep motorized faders from oscillating. So:
 They talk over a simple newline-delimited ASCII protocol on USB serial. See
 [serial-protocol.md](serial-protocol.md).
 
+## Alternative platforms (future / v2)
+
+The **[Arduino Uno Q](https://docs.arduino.cc/hardware/uno-q/)** is architecturally
+this exact design on a single board: a Qualcomm Dragonwing QRB2210 (quad
+Cortex-A53, runs Debian Linux) **plus** an STM32U585 (Cortex-M33) real-time MCU,
+with an internal bridge — i.e. our "Pi brain + RP2040 brain" fused, plus eMMC.
+
+We're **staying on Pi 4 B + RP2040 for v1** because: the Uno Q's MIPI-DSI display
+and analog audio come out only via a separate carrier board; it's brand-new
+(Oct 2025) with an unproven ecosystem/supply — risky for a build others must
+reproduce; and we already have a working Pi stack. It's a strong **v2 candidate**
+if its ecosystem matures — it could collapse both boards into one.
+
 ## Audio path
 
 ```
