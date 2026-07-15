@@ -81,6 +81,10 @@ class PlayerState:
     # (incl. followed/editorial playlists we can't read the tracklist of).
     queue: list[Track] = field(default_factory=list)
 
+    # Battery (None = no battery source configured / not present).
+    battery_percent: float | None = None
+    battery_charging: bool = False
+
     @property
     def is_playing(self) -> bool:
         return self.status is PlaybackStatus.PLAYING

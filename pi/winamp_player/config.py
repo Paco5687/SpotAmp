@@ -23,6 +23,11 @@ class Config:
     serial_port: str = "COM3"      # e.g. "/dev/ttyACM0" on the Pi
     serial_baud: int = 115200
 
+    # Battery. "none" | "mock" (simulated, for UI dev) | "x728" (Geekworm UPS).
+    battery: str = "none"
+    battery_i2c_bus: int = 1
+    battery_low_shutdown: bool = False   # only ever acts on real hardware
+
     # UI.
     fullscreen: bool = False       # True on the device's LCD
     window_size: tuple[int, int] = (500, 800)  # portrait, 5:8 like the body

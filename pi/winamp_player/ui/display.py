@@ -176,6 +176,21 @@ class Display:
             pygame.draw.line(self.surface, skin.BEVEL_LIGHT, (10, yy), (r.w - 90, yy))
         label = self.f_title.render("WINAMP  ·  PHYSICAL EDITION", True, skin.ACCENT)
         self.surface.blit(label, (r.w // 2 - label.get_width() // 2, 7))
+        self._draw_battery(state)
+
+    def _draw_battery(self, state: PlayerState) -> None:
+        if state.battery_percent is None:
+            return
+        pct = max(0.0, min(100.0, state.battery_percent))
+        w, h = 26, 12
+        x, y = self.L.W - 12 - w, 9
+        pygame.draw.rect(self.surface, skin.TEXT_DIM, (x, y, w, h), 1)          # body
+        pygame.draw.rect(self.surface, skin.TEXT_DIM, (x + w, y + 3, 2, h - 6))  # nub
+        col = (skin.ACCENT if pct > 20 else skin.LCD_AMBER if pct > 10 else (220, 60, 60))
+        pygame.draw.rect(self.surface, col, (x + 1, y + 1, int((w - 2) * pct / 100), h - 2))
+        if state.battery_charging:
+            self.surface.blit(self.f_tiny.render("+", True, skin.BG), (x + w // 2 - 2, y - 1))
+        self._blit_right(self.f_tiny, f"{int(pct)}%", x - 4, y + 1, skin.TEXT_DIM)
 
     def _draw_lcd(self, state: PlayerState) -> None:
         r = self.L.lcd
