@@ -1,0 +1,86 @@
+# WinAmp · Physical Edition
+
+A handheld, book-sized (≈8″ × 5″ × 1″) physical Spotify player styled after the
+classic WinAmp interface. Color LCD touchscreen for the playlist and album art;
+everything else is **real hardware** — buttons, pots, and **motorized faders**
+for a graphic EQ plus volume and a seek fader that physically follows the song.
+
+Inspired by [Eslam Mohamed's modular WinAmp concept](https://www.yankodesign.com/2024/04/27/modular-media-player-concept-brings-iconic-winamp-design-to-the-physical-world/)
+— but built as a single integrated unit, and actually real.
+
+> *It really whips the llama's ass.*
+
+**Open source (MIT).** Built on a **Raspberry Pi 4 B**. Code, full parts list, and
+3D models are being published so you can build your own — see the
+**[Wiki](https://github.com/Paco5687/WinAmpPlayer/wiki)** and
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Architecture at a glance
+
+Two brains, because Linux is bad at real-time motor control and a microcontroller
+is great at it:
+
+```
+        ┌───────────────────────────┐        USB serial        ┌──────────────────────┐
+        │     Raspberry Pi 4 B       │◀───────(ASCII)──────────▶│  RP2040 (Pico)       │
+        │                            │                          │                      │
+        │  go-librespot ─▶ ALSA EQ ─▶│─▶ I2S DAC ─▶ 🎧          │  buttons / pots      │
+        │        │            ▲      │                          │  encoders            │
+        │  Spotify Web API    │      │   FADER <id> <pos> ──────▶  motorized faders    │
+        │        │            │      │                          │   (PID position loop)│
+        │  Pygame UI (this) ──┘      │◀──── EV FADER/BTN/TOUCH ──│  ← wiper ADCs (mux)  │
+        └───────────────────────────┘                          └──────────────────────┘
+              color LCD touchscreen
+```
+
+- **[`pi/`](pi/)** — the Python/Pygame player app. Runs **fully mocked on a
+  laptop today** (no hardware, no Spotify account needed). This is where the UI
+  and app logic live.
+- **[`firmware/`](firmware/)** — the RP2040 firmware: reads controls, runs the
+  closed-loop control for the motorized faders, speaks the serial protocol.
+- **[`hardware/`](hardware/)** — bill of materials, wiring, enclosure notes.
+- **[`docs/`](docs/)** — [architecture](docs/architecture.md) and the
+  [serial protocol spec](docs/serial-protocol.md).
+
+## Try it right now (no hardware)
+
+```bash
+cd pi
+pip install -r requirements.txt
+python -m winamp_player
+```
+
+A portrait window opens with the WinAmp-style skin: green LCD readout, a live
+spectrum analyzer, a demo playlist, working transport buttons, and draggable EQ /
+volume / seek faders. Regions are shaded to show what's a **physical control**
+vs. the **color touchscreen** on the real device (press `L` to toggle).
+
+Keys: `space` play/pause · `←/→` prev/next · `↑/↓` volume · `s` stop · `q` quit.
+
+Requires **Python 3.11+** (uses `tomllib`).
+
+## Status
+
+Early scaffold. What works: the mocked desktop app end-to-end. What's stubbed
+and next up:
+
+- [ ] `go-librespot` integration (transport works; wire playlists + album art via the Web API)
+- [ ] ALSA software EQ pipeline the faders actually drive
+- [ ] Live audio → FFT tap for a real spectrum analyzer
+- [ ] RP2040 firmware on real hardware (fader PID tuning)
+- [ ] Enclosure CAD
+
+See per-directory READMEs for details.
+
+## The honest hard parts
+
+- **Spotify needs Premium + go-librespot.** There's no official "play a playlist
+  on a Pi" API. go-librespot is a full Spotify client that runs on the Pi and
+  authenticates **standalone — no phone** (one-time OAuth, then cached). See
+  [docs/spotify-setup.md](docs/spotify-setup.md).
+- **Motorized faders are the cost/complexity center.** A full motorized EQ +
+  volume + seek is ~10 motorized faders (~$180+) plus motor drivers, position
+  ADCs (via a mux), and a PID loop. A 10-band EQ won't physically fit a 5″ width,
+  so this build uses a **7-band** EQ. See [hardware/BOM.md](hardware/BOM.md).
+- **Spotify exposes no EQ**, so the graphic EQ is a software EQ in the Pi's ALSA
+  pipeline, applied to go-librespot's output before the DAC.

@@ -1,0 +1,29 @@
+# Copy to config.toml and edit for real hardware. Without config.toml the app
+# runs fully mocked (simulated player + no microcontroller), which is perfect
+# for developing the UI on a laptop.
+
+# "mock"     — simulated playback (no account/device needed)
+# "webapi"   — control a REAL Spotify device via the Web API. Plays ANY playlist
+#              incl. ones you only follow. Needs an active device: open the
+#              Spotify desktop/phone app, or run go-librespot. Premium required.
+# "librespot"— talk directly to a local go-librespot HTTP API (on the Pi)
+backend = "mock"
+librespot_url = "http://localhost:3678"  # go-librespot HTTP API
+
+controls = "mock"                        # "mock" | "serial"
+serial_port = "/dev/ttyACM0"             # microcontroller; "COM3" on Windows
+serial_baud = 115200
+
+fullscreen = false                       # true on the device's LCD
+window_size = [500, 800]                 # portrait, 5:8 like the physical body
+fps = 30
+show_hardware_legend = true              # shade physical vs touchscreen regions
+
+# Spotify Web API — for playlists, album art, and directing playback.
+# Create an app at https://developer.spotify.com/dashboard. Uses PKCE, so only
+# the client id is needed (no secret on the device). In the dashboard, add this
+# exact redirect URI:  http://127.0.0.1:8888/callback
+# Then run once:  python -m winamp_player.authorize
+spotify_client_id = ""
+spotify_redirect_port = 8888
+# spotify_token_path = ""   # defaults to pi/spotify_token.json

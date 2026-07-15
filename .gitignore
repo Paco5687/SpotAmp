@@ -1,0 +1,42 @@
+# --- Secrets / credentials (NEVER commit — this is a public repo) ---------- #
+# Local player config (contains your Spotify client id, serial port, etc.)
+pi/config.toml
+config.toml
+# Cached Spotify OAuth token (contains a refresh token!)
+spotify_token.json
+pi/spotify_token.json
+# go-librespot cached login (if ever placed in the tree; normally in ~/.config)
+credentials.json
+go-librespot/credentials.json
+# Generic secret patterns, just in case
+*.secret
+*.secret.*
+.env
+.env.*
+!*.example
+!*.example.*
+
+# --- Machine-local editor/tooling ------------------------------------------ #
+.claude/settings.local.json
+
+# --- Python ---------------------------------------------------------------- #
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# --- Firmware build -------------------------------------------------------- #
+firmware/.pio/
+firmware/.pioenvs/
+*.elf
+*.uf2
+*.bin
+
+# --- OS / editor ----------------------------------------------------------- #
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

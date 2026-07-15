@@ -1,0 +1,8 @@
+# Core UI — needed for mock mode (runs on a laptop, no hardware).
+pygame>=2.5
+
+# Real hardware only (safe to install everywhere; imported lazily):
+#   requests  — talk to the go-librespot HTTP API
+#   pyserial  — talk to the microcontroller over USB serial
+requests>=2.31
+pyserial>=3.5

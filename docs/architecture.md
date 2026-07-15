@@ -1,0 +1,82 @@
+# Architecture
+
+## Why two brains
+
+The Pi runs Linux, which is non-deterministic under scheduling load — fine for
+UI and networking, bad for a tight motor-control loop that has to run at a
+steady ~1 kHz to keep motorized faders from oscillating. So:
+
+- **Raspberry Pi** — Spotify client, audio pipeline, the LCD UI, high-level
+  logic. Sends *targets* ("move volume fader to 72%").
+- **RP2040 microcontroller** — soft-real-time I/O. Owns the PID loops that drive
+  each motorized fader to its target, debounces buttons, reads pots/encoders,
+  and streams events up to the Pi.
+
+They talk over a simple newline-delimited ASCII protocol on USB serial. See
+[serial-protocol.md](serial-protocol.md).
+
+## Audio path
+
+```
+Spotify ──▶ go-librespot ──▶ ALSA (software graphic EQ) ──▶ I2S DAC ──▶ headphones/speaker
+                                    ▲                  │
+                          EQ gains from faders    audio tap ──▶ FFT ──▶ spectrum bars (UI)
+```
+
+- **go-librespot** is a full Spotify client that streams and decodes audio
+  directly (requires Premium). It authenticates **standalone via interactive
+  OAuth** — a one-time browser login, then it reconnects on cached credentials
+  forever, no phone. It exposes an HTTP + WebSocket API for transport and
+  now-playing metadata. (Zeroconf/"pick it from a phone" is an optional mode we
+  don't rely on.)
+- The **graphic EQ is ours** — Spotify exposes no EQ over the API, so we insert a
+  software EQ into the ALSA chain (e.g. an `ladspa`/`caps` multi-band plugin, or
+  a custom filter). The motorized EQ faders set its band gains.
+- A **loopback/monitor tap** feeds a small FFT so the spectrum analyzer reflects
+  the actual audio, not a simulation. (In mock mode it's simulated.)
+
+## The Pi app (`pi/winamp_player/`)
+
+| Module | Responsibility |
+|---|---|
+| `models.py` | `PlayerState`, `Track` — the single source of truth the UI renders |
+| `spotify.py` | `MockPlayer` (simulation) and `LibrespotPlayer` (real go-librespot) behind one `PlayerBackend` interface |
+| `controls.py` | Serial protocol + `MockControls` / `SerialControls` |
+| `ui/skin.py` | Palette + portrait layout rectangles (WinAmp-inspired, original assets) |
+| `ui/display.py` | Renders each frame; turns mouse/touch into semantic actions |
+| `app.py` | Main loop, action routing, and **motor sync** |
+
+### Motor sync — the signature trick
+
+Every frame, `app._sync_motors()` computes where each motorized fader *should*
+be from `PlayerState` (volume, seek progress, EQ band gains) and sends a
+`FADER <id> <pos>` target — **unless the user is currently touching that fader**
+(tracked via `EV TOUCH` events). So:
+
+- Change the song → the **seek fader glides** to the new position and tracks it.
+- Load an EQ preset → the **EQ faders physically animate** into the curve.
+- Grab a fader → the motor yields; when you let go, it holds your value.
+
+### Backend abstraction
+
+`PlayerBackend` is a `Protocol`. `MockPlayer` advances a demo playlist with no
+network so the entire UI is buildable on a laptop. `LibrespotPlayer` maps the
+same methods onto go-librespot's `/player/*` endpoints. Swap via `config.toml`.
+
+## Deployment on the Pi
+
+1. `go-librespot` as a systemd service, authenticated once via interactive
+   OAuth (standalone; see [spotify-setup.md](spotify-setup.md)).
+2. ALSA configured with the EQ plugin between librespot and the DAC.
+3. The Pygame app launched fullscreen on boot (`fullscreen = true`) against the
+   DSI/HDMI LCD, kiosk-style.
+4. RP2040 flashed and enumerated at `/dev/ttyACM0`.
+
+## Roadmap
+
+1. **M1 — Desktop mock** ✅ full UI + logic, no hardware.
+2. **M2 — Spotify real** — go-librespot transport + Web API playlists/art.
+3. **M3 — Controls** — RP2040 buttons/pots/encoders over serial (non-motorized).
+4. **M4 — Motors** — motorized faders + PID + motor sync on real hardware.
+5. **M5 — Audio EQ + spectrum** — ALSA EQ the faders drive; FFT spectrum tap.
+6. **M6 — Enclosure** — 3D-printed book-form body, battery, assembly.

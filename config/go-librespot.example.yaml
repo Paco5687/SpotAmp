@@ -1,0 +1,21 @@
+# go-librespot config TEMPLATE for the WinAmp Physical Edition (audio engine).
+# Copy to the Pi at ~/.config/go-librespot/config.yml and adjust.
+# Verify key names against the go-librespot README — it is the source of truth:
+#   https://github.com/devgianlu/go-librespot
+#
+# This is a *template*: it contains NO credentials. The first run performs a
+# one-time interactive OAuth login and caches credentials.json alongside this
+# file (that file is gitignored — never commit it).
+
+device_name: "Winamp Physical Edition"
+device_type: computer
+
+credentials:
+  type: interactive          # standalone browser login, then cached (no phone)
+
+audio_backend: alsa          # on the Pi; feeds the ALSA EQ chain -> I2S DAC
+
+server:                      # HTTP + WebSocket API the player app talks to
+  enabled: true
+  address: 127.0.0.1
+  port: 3678
