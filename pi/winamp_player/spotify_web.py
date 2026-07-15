@@ -191,6 +191,12 @@ class SpotifyWeb:
     def set_volume(self, volume_percent: int) -> None:
         self._put("/me/player/volume", volume_percent=int(volume_percent))
 
+    def set_shuffle(self, state: bool) -> None:
+        self._put("/me/player/shuffle", state=str(bool(state)).lower())
+
+    def set_repeat(self, mode: str) -> None:  # "off" | "track" | "context"
+        self._put("/me/player/repeat", state=mode)
+
     def transfer_to(self, device_id: str, play: bool = True) -> None:
         self._put("/me/player", json={"device_ids": [device_id], "play": play})
 

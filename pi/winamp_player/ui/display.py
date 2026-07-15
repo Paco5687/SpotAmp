@@ -14,16 +14,17 @@ from typing import Callable
 
 import pygame
 
-from ..models import EQ_BANDS, PlaybackStatus, PlayerState
+from ..models import EQ_BANDS, PlaybackStatus, PlayerState, RepeatMode
 from . import skin
 from .skin import Layout, Rect
 
 Action = Callable[..., None]
 
-_TRANSPORT = ["prev", "play", "pause", "stop", "next", "eject"]
+_TRANSPORT = ["prev", "play", "pause", "stop", "next", "eject", "shuffle", "repeat"]
 _GLYPH = {
     "prev": "|◀", "play": "▶", "pause": "▮▮",
     "stop": "■", "next": "▶|", "eject": "⏏",
+    "shuffle": "⇄", "repeat": "↻",
 }
 _NUM_EQ_COLS = EQ_BANDS + 1  # bands + preamp
 
@@ -132,6 +133,7 @@ class Display:
             "prev": ("prev", {}), "next": ("next", {}),
             "play": ("play", {}), "pause": ("play_pause", {}),
             "stop": ("stop", {}), "eject": ("show_library", {}),  # eject = browse library
+            "shuffle": ("toggle_shuffle", {}), "repeat": ("cycle_repeat", {}),
         }
         action, kw = mapping[name]
         self.on_action(action, **kw)
@@ -237,7 +239,9 @@ class Display:
             active = (
                 (name == "play" and state.status is PlaybackStatus.PLAYING) or
                 (name == "pause" and state.status is PlaybackStatus.PAUSED) or
-                (name == "stop" and state.status is PlaybackStatus.STOPPED)
+                (name == "stop" and state.status is PlaybackStatus.STOPPED) or
+                (name == "shuffle" and state.shuffle) or
+                (name == "repeat" and state.repeat is not RepeatMode.OFF)
             )
             self._button(br, _GLYPH[name], active)
 
