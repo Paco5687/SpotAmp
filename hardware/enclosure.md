@@ -88,6 +88,18 @@ three facts that change the body:
   (cable hangs naturally when handheld).
 - **Vibration**: mount drivers on thin foam gaskets so the aluminum panel
   doesn't buzz at volume.
+- **Loudness upgrade slot (decided 2026-07-16)**: v1 ships the TPA2016; the CAD
+  reserves space for a **MAX9744 (I2C, same bus) + 5→12 V boost** and grille area
+  for ~2″/5 W drivers — the "small boombox" tier is a one-board swap after bench
+  listening, no redesign.
+
+## Knobs & finish
+
+- **Final build**: aluminum fader caps (T-bar or rectangular, for the ALPS 9-T
+  lever) + knurled aluminum encoder knobs, anodized to match or contrast the body.
+- **Prototype**: 3D-print the same knob geometry so the CAD is shared — print to
+  fit, then order/machine the aluminum versions from the identical model.
+- Fader caps must clear adjacent slots at 20 mm pitch — cap width ≤ 16 mm.
 
 Grab the **ALPS STEP model** from the product page when CAD starts — it's the
 part everything else packs around.
