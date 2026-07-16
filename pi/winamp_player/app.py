@@ -23,6 +23,8 @@ from .controls import (
     ControlEventType,
     FaderId,
     FADER_MAX,
+    cmd_disp_time,
+    cmd_disp_title,
     cmd_fader_target,
     make_controls,
 )
@@ -244,6 +246,23 @@ class App:
                 self._last_sent[fid] = pos
 
     # ------------------------------------------------------------------ #
+    # OLED readout sync: stream title/time to the RP2040's amber display
+    # ------------------------------------------------------------------ #
+    _disp_title_sent: str = ""
+    _disp_secs_sent: int = -1
+
+    def _sync_display(self) -> None:
+        st = self.backend.state
+        title = st.track.display
+        if title != self._disp_title_sent:
+            self.controls.send(cmd_disp_title(title))
+            self._disp_title_sent = title
+        secs = st.position_ms // 1000
+        if secs != self._disp_secs_sent:   # at most ~1 update/second
+            self.controls.send(cmd_disp_time(st.position_ms, st.track.duration_ms))
+            self._disp_secs_sent = secs
+
+    # ------------------------------------------------------------------ #
     # main loop
     # ------------------------------------------------------------------ #
     def run(self) -> None:
@@ -257,6 +276,7 @@ class App:
             self._read_battery(dt)
             self.backend.poll()
             self._sync_motors()
+            self._sync_display()
             self.screen.update(self.backend.state, dt)
             self.screen.draw(self.backend.state, self.browse)
             pygame.display.flip()

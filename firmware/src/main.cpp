@@ -5,7 +5,13 @@
 //
 // This is a STRUCTURAL skeleton: the protocol, control-loop shape, and mux
 // scanning are real; pin numbers and PID gains are placeholders to tune on the
-// bench. Bring up one fader first (see firmware/README.md), then scale out.
+// bench. Bring up ONE fader on direct pins first (see firmware/README.md).
+//
+// NOTE (I/O architecture): the full build does NOT direct-wire everything — the
+// Pico hasn't the pins (see hardware/wiring.md). Motors: 2x PCA9685 over I2C.
+// Touch: MPR121. Buttons: MCP23017. OLED readout: SSD1322 over SPI, fed by the
+// Pi's `DISP TITLE/TIME/INFO` commands. The MOTOR_PIN table below is only for
+// the single-fader bring-up stage.
 
 #include <Arduino.h>
 
