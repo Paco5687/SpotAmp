@@ -1,0 +1,19 @@
+# go-librespot as a systemd service (auto-start on boot).
+# Install: sudo cp deploy/go-librespot.service /etc/systemd/system/
+#          sudo systemctl daemon-reload && sudo systemctl enable --now go-librespot
+# Adjust User/paths if your username isn't "bkern".
+
+[Unit]
+Description=go-librespot (Spotify Connect player)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=bkern
+WorkingDirectory=/home/bkern/go-librespot
+ExecStart=/home/bkern/go-librespot/go-librespot
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

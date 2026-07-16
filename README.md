@@ -61,16 +61,20 @@ Requires **Python 3.11+** (uses `tomllib`).
 
 ## Status
 
-Early scaffold. What works: the mocked desktop app end-to-end. What's stubbed
-and next up:
+**Standalone on a Pi 4 B and playing** — full [project board](https://github.com/users/Paco5687/projects/4).
 
-- [ ] `go-librespot` integration (transport works; wire playlists + album art via the Web API)
-- [ ] ALSA software EQ pipeline the faders actually drive
-- [ ] Live audio → FFT tap for a real spectrum analyzer
-- [ ] RP2040 firmware on real hardware (fader PID tuning)
-- [ ] Enclosure CAD
+Done:
+- [x] Desktop mock app end-to-end (UI, Spotify Web API browse, playback, queue)
+- [x] **go-librespot** on the Pi — standalone audio, no phone (see [docs/pi-bringup.md](docs/pi-bringup.md))
+- [x] App running on the device's screen (portrait), controlling the local player
 
-See per-directory READMEs for details.
+Next up:
+- [ ] **Central screen redesign** — HyperPixel 4.0 Square + compact multi-view UI (now playing / playlists / queue) with physical view buttons
+- [ ] RP2040 firmware: buttons, pots, encoders, motorized-fader PID
+- [ ] ALSA software EQ + real FFT spectrum
+- [ ] Power (USB-C UPS, battery via RP2040) and enclosure CAD
+
+See [docs/pi-bringup.md](docs/pi-bringup.md) and per-directory READMEs for details.
 
 ## The honest hard parts
 
