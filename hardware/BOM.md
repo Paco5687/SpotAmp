@@ -13,8 +13,15 @@ volume + motorized seek, single integrated body.
 | **Raspberry Pi 4 Model B (2–4 GB)** | The build target. Ample for Pygame + ALSA EQ + FFT, has a 3.5 mm jack, uses the 15-pin DSI connector, and is easier on the battery than a Pi 5. | 45 |
 | microSD 32 GB (A1) | OS + app | 8 |
 | RP2040 (Raspberry Pi Pico) | Real-time controls + motor PID. Cheap, 26 GPIO, PIO, 3 ADC. | 4 |
-| 4″ IPS capacitive touchscreen, 480×800, MIPI-DSI | The center "playlist/album" color LCD. Portrait native. Use a Pi-4 (15-pin DSI) compatible panel. | 40 |
-| I2S DAC (PCM5102 / HiFiBerry DAC2) | Recommended for clean audio. The Pi 4's own 3.5 mm jack works as a fallback (lower quality). | 20 |
+| **Pimoroni HyperPixel 4.0 Square** (720×720, DPI, touch) | The center screen — a small square LCD showing a multi-view UI (now playing / playlists / queue). ⚠️ DPI uses **all 40 GPIO** — see notes below. | 55 |
+| **USB DAC** (e.g. Sabrent/generic) | Audio out. A GPIO I2S HAT can't be used (HyperPixel's DPI takes the I2S pins). Pi 3.5 mm jack works for early testing. | 15 |
+
+> **HyperPixel I/O note:** the HyperPixel's DPI interface consumes all 40 GPIO
+> pins (incl. standard I2C and I2S). That's fine here because everything else is on
+> **USB**: controls/pots/faders **and battery sensing** run on the **RP2040** (USB
+> serial), **audio** goes to a **USB DAC**, and the **UPS powers the Pi via USB-C**
+> rather than stacking on the header. An alternate I2C is broken out on BCM 10/11 if
+> ever needed. This is exactly why the two-brain (Pi + RP2040) split pays off.
 
 ## The motorized faders (the expensive part)
 

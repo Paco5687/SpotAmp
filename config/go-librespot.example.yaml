@@ -13,7 +13,11 @@ device_type: computer
 credentials:
   type: interactive          # standalone browser login, then cached (no phone)
 
-audio_backend: alsa          # on the Pi; feeds the ALSA EQ chain -> I2S DAC
+audio_backend: alsa
+# Pick the real output device (raspi-config's default does NOT affect go-librespot).
+# `plughw:CARD=Headphones` = Pi 3.5mm jack (find yours with `aplay -l`).
+# The final build uses a USB DAC (HyperPixel's DPI takes the I2S GPIO).
+audio_device: plughw:CARD=Headphones
 
 server:                      # HTTP + WebSocket API the player app talks to
   enabled: true

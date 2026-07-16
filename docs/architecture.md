@@ -85,6 +85,17 @@ same methods onto go-librespot's `/player/*` endpoints. Swap via `config.toml`.
    DSI/HDMI LCD, kiosk-style.
 4. RP2040 flashed and enumerated at `/dev/ttyACM0`.
 
+## Central screen & UI direction
+
+The current full-window WinAmp skin is **temporary scaffolding** that proved the
+plumbing. The real device is **physical-first**: transport, EQ, and faders are
+hardware; the screen is a small **square** LCD (**HyperPixel 4.0 Square, 720×720**)
+showing a compact **multi-view** UI — one view at a time — switched by **dedicated
+physical buttons**. v1 views: Now Playing, Playlist selector, Play Queue (Search
+later). Playback control uses `backend = "librespot"` (go-librespot's local API on
+:3678), so control stays on the Pi — no cloud round-trip. The HyperPixel's DPI takes
+all GPIO, so audio → USB DAC and battery sensing → RP2040 (see hardware/BOM.md).
+
 ## Roadmap
 
 1. **M1 — Desktop mock** ✅ full UI + logic, no hardware.
