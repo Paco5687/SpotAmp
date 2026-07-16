@@ -85,6 +85,50 @@ Each motorized fader needs **three** connections handled together:
 > **reduced build** (only volume + seek motorized, driven directly from Pico PWM
 > pins at 20 kHz+) sidesteps it completely.
 
+## Electrical detail notes (desk-verified against datasheets, 2026-07-16)
+
+**I2C address map** — no conflicts ✓:
+
+| Device | Addr | Note |
+|---|---|---|
+| PCA9685 #1 | 0x40 | default |
+| PCA9685 #2 | 0x41 | solder jumper A0 |
+| MCP23017 | 0x20 | A0–A2 → GND |
+| X728 fuel gauge (MAX17040) | 0x36 | see battery note below |
+| TPA2016 amp | 0x58 | fixed |
+| MPR121 | 0x5A | ADDR → GND |
+
+- **Pull-ups**: every breakout ships its own (typ. 10 k). Six in parallel ≈ 1.7 k —
+  near the 3 mA sink limit. If the bus misbehaves, desolder pull-ups from all but
+  one board.
+- **Motor-safe boot**: PCA9685 outputs are indeterminate until configured — tie
+  both boards' **/OE to GP3 with a pull-up** so motors stay disabled until the
+  firmware releases them. (GP3 was spare.)
+- **Simultaneous-slew current**: stagger the PCA9685 per-channel ON offsets so 10
+  motors don't switch in phase; with the 2× 2200 µF bulk caps that tames rail sag.
+- **Touch-sense wiring**: each fader's T terminal → an MPR121 electrode. Keep the
+  runs short and away from the motor leads (they're capacitive sense lines).
+
+**Mux channel map** (CD74HC4067 → ADC0):
+
+| CH | Signal |
+|---|---|
+| 0–6 | EQ band wipers 0–6 |
+| 7 | preamp wiper |
+| 8 | volume wiper |
+| 9 | seek wiper |
+| 10 | balance pot |
+| 11–15 | spare |
+
+**Battery telemetry** — the X728 can't stack on the Pi (HyperPixel owns the
+header); it runs beside it and powers the Pi over USB-C. Its **MAX17040 fuel
+gauge is I2C** — so jumper the X728 header's SDA/SCL/GND over to the **RP2040
+bus** (addr 0x36, no conflict) and the firmware reports real state-of-charge over
+serial (`power.py` already knows the MAX17040 registers). X728's AC-loss/PLD
+signal → **GP2** (was spare) for charge-state. Fallback if the jumpering fights
+us: a resistor divider off the battery to **GP28/ADC2** (for a 1S pack, 4.2 V max:
+39 k / 100 k → 3.0 V full-scale — **verify the X728's cell topology first**).
+
 ## Control loop (firmware)
 
 Per motorized fader, ~1 kHz:
