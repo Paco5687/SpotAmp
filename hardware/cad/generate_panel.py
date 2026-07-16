@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Front-panel cutout drawing generator — WinAmp Physical Edition.
+"""Front-panel cutout drawing generator — SpotAmp.
 
 Emits, from ONE parametric geometry description:
   * front-panel.dxf — layered DXF (mm) for SketchUp Pro / any CAD

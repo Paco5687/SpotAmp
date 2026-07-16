@@ -1,4 +1,4 @@
-# Pi app — `winamp_player`
+# Pi app — `spotamp`
 
 The Python/Pygame application: the WinAmp-style UI, Spotify control, and the
 bridge to the microcontroller. Runs **fully mocked on a laptop** so you can build
@@ -9,7 +9,7 @@ the UI with no hardware and no Spotify account.
 ```bash
 cd pi
 pip install -r requirements.txt   # pygame is all you need for mock mode
-python -m winamp_player
+python -m spotamp
 ```
 
 Requires **Python 3.11+** (uses the stdlib `tomllib`).
@@ -41,7 +41,7 @@ No website or hosting needed — it uses a **loopback redirect + PKCE**.
 3. Put the app's **Client ID** in `config.toml` as `spotify_client_id` (no secret needed).
 4. Authorize once:
    ```bash
-   python -m winamp_player.authorize
+   python -m spotamp.authorize
    ```
    A browser opens, you approve, and a refresh token is cached to
    `pi/spotify_token.json` (gitignored). The device refreshes tokens forever after that.
@@ -68,8 +68,8 @@ hardware; they're imported lazily so mock mode doesn't require them.
 ## Layout
 
 ```
-winamp_player/
-├── __main__.py      # python -m winamp_player (also: `authorize` subcommand)
+spotamp/
+├── __main__.py      # python -m spotamp (also: `authorize` subcommand)
 ├── app.py           # main loop, action routing, MOTOR SYNC, queue/battery polls
 ├── config.py        # config.toml loader (zero-config defaults)
 ├── models.py        # PlayerState / Track — the source of truth

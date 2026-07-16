@@ -21,10 +21,10 @@ jobs:
 
       - name: Lint (critical errors only)
         # Syntax errors + undefined names. Style is not enforced (yet).
-        run: ruff check --select E9,F63,F7,F82 pi/winamp_player
+        run: ruff check --select E9,F63,F7,F82 pi/spotamp
 
       - name: Byte-compile
-        run: python -m compileall -q pi/winamp_player
+        run: python -m compileall -q pi/spotamp
 
       - name: Unit tests
         working-directory: pi
@@ -45,6 +45,6 @@ jobs:
                   "authorize", "controls", "library", "images",
                   "ui.skin", "ui.screen", "power", "app"]
           for m in mods:
-              importlib.import_module("winamp_player." + m)
+              importlib.import_module("spotamp." + m)
           print(f"imported {len(mods)} modules OK")
           PY

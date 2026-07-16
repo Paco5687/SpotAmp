@@ -4,7 +4,7 @@ A deliberately simple, human-readable, newline-delimited ASCII protocol over USB
 serial (CDC-ACM). ASCII because you can debug the whole thing with a serial
 monitor. **115200 baud, 8N1.** Every message ends with `\n`.
 
-The Python side is `pi/winamp_player/controls.py`; the firmware side is
+The Python side is `pi/spotamp/controls.py`; the firmware side is
 `firmware/src/main.cpp`. Keep both in sync with this document.
 
 ## Pi → microcontroller (commands)

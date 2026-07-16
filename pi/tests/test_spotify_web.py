@@ -1,6 +1,6 @@
 """Web API response parsing (no network)."""
 
-from winamp_player.spotify_web import track_from_item
+from spotamp.spotify_web import track_from_item
 
 
 def test_track_from_full_item():

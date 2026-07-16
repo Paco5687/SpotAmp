@@ -1,6 +1,6 @@
 """One-time Spotify authorization.
 
-    python -m winamp_player.authorize
+    python -m spotamp.authorize
 
 Reads client id + redirect from config.toml, runs the loopback PKCE flow, and
 caches the refresh token. Run this once on the device (or your laptop) after

@@ -1,6 +1,6 @@
 """Serial protocol: parsing inbound events, formatting outbound commands."""
 
-from winamp_player.controls import (
+from spotamp.controls import (
     ControlEvent,
     ControlEventType,
     FADER_MAX,
@@ -46,7 +46,7 @@ def test_cmd_fader_release_and_led():
 
 
 def test_disp_commands_are_single_line():
-    from winamp_player.controls import cmd_disp_info, cmd_disp_time, cmd_disp_title
+    from spotamp.controls import cmd_disp_info, cmd_disp_time, cmd_disp_title
 
     assert cmd_disp_title("M83 - Midnight City") == "DISP TITLE M83 - Midnight City\n"
     # embedded newlines/extra whitespace must never break protocol framing
@@ -58,14 +58,14 @@ def test_disp_commands_are_single_line():
 
 def test_button_ids_cover_the_panel():
     """Panel buttons 0..12 plus the two encoder pushes (13/14)."""
-    from winamp_player.controls import ButtonId, PotId
+    from spotamp.controls import ButtonId, PotId
 
     assert {b.value for b in ButtonId} == set(range(15))
     assert PotId.BALANCE.value == 0
 
 
 def test_parse_battery_and_jack_events():
-    from winamp_player.controls import ControlEventType
+    from spotamp.controls import ControlEventType
 
     assert parse_event("EV BAT 0 725").type is ControlEventType.BATTERY
     assert parse_event("EV BAT 0 725").value == 725

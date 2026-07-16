@@ -1,9 +1,9 @@
 <svg viewBox="0 0 1240 900" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
-  <title>WinAmp Physical Edition — system wiring</title>
+  <title>SpotAmp — system wiring</title>
   <rect width="1240" height="900" fill="#1c1e22"/>
 
   <!-- title + legend -->
-  <text x="40" y="44" fill="#2cff78" font-size="24" font-weight="bold">WINAMP · PHYSICAL EDITION — SYSTEM WIRING</text>
+  <text x="40" y="44" fill="#2cff78" font-size="24" font-weight="bold">SPOTAMP — SYSTEM WIRING</text>
   <g font-size="13">
     <line x1="620" y1="30" x2="660" y2="30" stroke="#ff5c5c" stroke-width="3"/><text x="666" y="34" fill="#d2d6de">5V power</text>
     <line x1="760" y1="30" x2="800" y2="30" stroke="#ffbe3c" stroke-width="3"/><text x="806" y="34" fill="#d2d6de">motor rail</text>

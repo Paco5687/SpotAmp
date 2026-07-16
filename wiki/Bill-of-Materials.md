@@ -1,7 +1,7 @@
 # Bill of Materials
 
 > **Placeholder** — the authoritative, always-current BOM lives in the repo:
-> **[hardware/BOM.md](https://github.com/Paco5687/WinAmpPlayer/blob/main/hardware/BOM.md)**
+> **[hardware/BOM.md](https://github.com/Paco5687/SpotAmp/blob/main/hardware/BOM.md)**
 
 Quick summary (full motorized build ≈ **$430–480**):
 

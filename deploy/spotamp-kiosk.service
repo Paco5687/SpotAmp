@@ -5,19 +5,19 @@
 #
 # Install (as the pi user, not root):
 #   mkdir -p ~/.config/systemd/user
-#   cp deploy/winamp-kiosk.service ~/.config/systemd/user/
-#   cp deploy/winamp-kiosk.sh ~/.config/winamp-kiosk.sh && chmod +x ~/.config/winamp-kiosk.sh
+#   cp deploy/spotamp-kiosk.service ~/.config/systemd/user/
+#   cp deploy/spotamp-kiosk.sh ~/.config/spotamp-kiosk.sh && chmod +x ~/.config/spotamp-kiosk.sh
 #   sudo loginctl enable-linger "$USER"      # start the user manager at boot
 #   systemctl --user daemon-reload
-#   systemctl --user enable --now winamp-kiosk.service
+#   systemctl --user enable --now spotamp-kiosk.service
 
 [Unit]
-Description=WinAmp Physical Edition kiosk UI
+Description=SpotAmp kiosk UI
 After=default.target
 
 [Service]
 Type=simple
-ExecStart=/home/bkern/.config/winamp-kiosk.sh
+ExecStart=/home/bkern/.config/spotamp-kiosk.sh
 Restart=on-failure
 RestartSec=3
 

@@ -1,7 +1,7 @@
 # Power and Battery
 
 > **Placeholder** — full design + tradeoffs in the repo:
-> **[hardware/power.md](https://github.com/Paco5687/WinAmpPlayer/blob/main/hardware/power.md)**
+> **[hardware/power.md](https://github.com/Paco5687/SpotAmp/blob/main/hardware/power.md)**
 
 TL;DR:
 - ~**6.5 W average**, ~**20 W peak** (motor slews) → design the 5 V rail for **5 A**.

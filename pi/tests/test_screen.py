@@ -7,11 +7,11 @@ view switching and the touch hit-testing of the tab strip.
 import pygame
 import pytest
 
-from winamp_player.library import BrowseState
-from winamp_player.models import PlaybackStatus, PlayerState, Track
-from winamp_player.spotify_web import Playlist
-from winamp_player.ui import skin
-from winamp_player.ui.screen import VIEWS, ScreenUI
+from spotamp.library import BrowseState
+from spotamp.models import PlaybackStatus, PlayerState, Track
+from spotamp.spotify_web import Playlist
+from spotamp.ui import skin
+from spotamp.ui.screen import VIEWS, ScreenUI
 
 
 @pytest.fixture(scope="module")

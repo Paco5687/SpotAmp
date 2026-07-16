@@ -1,6 +1,6 @@
 # Assembly
 
-> **Placeholder** — wiring reference: [hardware/wiring.md](https://github.com/Paco5687/WinAmpPlayer/blob/main/hardware/wiring.md)
+> **Placeholder** — wiring reference: [hardware/wiring.md](https://github.com/Paco5687/SpotAmp/blob/main/hardware/wiring.md)
 
 To be written up as the physical build comes together. Planned sections:
 

@@ -1,4 +1,4 @@
-// WinAmp Physical Edition — RP2040 controls firmware.
+// SpotAmp — RP2040 controls firmware.
 //
 // Implements the full serial protocol (docs/serial-protocol.md) over USB CDC:
 //   in : FADER, FADER_RELEASE, LED, DISP TITLE/TIME/INFO, PING
@@ -84,7 +84,7 @@ int8_t  encAccum[2] = {0, 0};
 uint8_t encPrev[2] = {0, 0};
 bool    encSwLast[2] = {true, true};
 
-char  dispTitle[96] = "WINAMP · PHYSICAL EDITION";
+char  dispTitle[96] = "SPOTAMP";
 uint32_t dispPosMs = 0, dispDurMs = 0;
 uint16_t dispKbps = 0, dispKhz = 0;
 uint32_t dispPosStamp = 0;       // millis() when dispPosMs was set
@@ -408,7 +408,7 @@ void setup() {
   haveOled = oled.begin();
   logmsg(haveOled ? "oled ok" : "oled MISSING");
 #endif
-  logmsg("winamp-fw ready");
+  logmsg("spotamp-fw ready");
 }
 
 void loop() {

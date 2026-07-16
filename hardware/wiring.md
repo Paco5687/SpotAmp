@@ -27,7 +27,7 @@ Mirrors the software's regions so the code and the hardware agree:
 
 ```
 ┌───────────────────────────────────────────┐  ← ~127 mm wide
-│  WINAMP · PHYSICAL EDITION       (title)   │
+│  SPOTAMP       (title)   │
 ├───────────────────────────────────────────┤
 │  0:42   [ amber OLED readout ]   320 kbps  │   PHYSICAL panel
 │  ░░▓▓██▓░ title + spectrum       44 kHz    │   SSD1322 256×64 SPI OLED on the

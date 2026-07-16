@@ -1,13 +1,13 @@
 # Raspberry Pi bring-up (standalone player)
 
 The exact, reproducible steps to turn a fresh Pi 4 B into the standalone player:
-go-librespot for audio + the WinAmp app on the screen. Written from a real
+go-librespot for audio + the SpotAmp app on the screen. Written from a real
 bring-up on 2026-07-15 (Raspberry Pi OS Bookworm, 64-bit).
 
 ## 1. Flash + first boot
 
 - **Raspberry Pi OS (64-bit), Desktop**, via Raspberry Pi Imager.
-- In the Imager gear: set hostname (`winamp`), **enable SSH**, username, Wi-Fi, locale.
+- In the Imager gear: set hostname (`spotamp`), **enable SSH**, username, Wi-Fi, locale.
 - First boot:
   ```bash
   sudo apt update && sudo apt full-upgrade -y
@@ -27,7 +27,7 @@ curl -L "$URL" -o go-librespot.tar.gz && tar xzf go-librespot.tar.gz && chmod +x
 
 Config `~/.config/go-librespot/config.yml` (see [../config/go-librespot.example.yaml](../config/go-librespot.example.yaml)):
 ```yaml
-device_name: "Winamp Physical Edition"
+device_name: "SpotAmp"
 device_type: computer
 audio_backend: alsa
 audio_device: plughw:CARD=Headphones   # Pi 3.5mm jack; USB DAC on the real build
@@ -58,22 +58,22 @@ affect go-librespot's ALSA path — set the device explicitly. If silent, `alsam
 
 Install [../deploy/go-librespot.service](../deploy/go-librespot.service):
 ```bash
-sudo cp ~/WinAmpPlayer/deploy/go-librespot.service /etc/systemd/system/
+sudo cp ~/SpotAmp/deploy/go-librespot.service /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now go-librespot
 journalctl -u go-librespot -f
 ```
 
 **Standalone check:** `curl -X POST http://localhost:3678/player/play -H 'Content-Type: application/json' -d '{"uri":"spotify:playlist:37i9dQZF1DXcBWIGoYBM5M"}'` — music plays with no phone/Spotify app open.
 
-## 3. The WinAmp app
+## 3. The SpotAmp app
 
 ```bash
-cd ~ && git clone https://github.com/Paco5687/WinAmpPlayer.git
-cd WinAmpPlayer/pi
+cd ~ && git clone https://github.com/Paco5687/SpotAmp.git
+cd SpotAmp/pi
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt          # piwheels provides arm64 pygame
 cp config.example.toml config.toml       # set backend="librespot", controls="mock"
-SDL_VIDEODRIVER=dummy python -c "import winamp_player.app; print('ok')"   # sanity
+SDL_VIDEODRIVER=dummy python -c "import spotamp.app; print('ok')"   # sanity
 ```
 
 ### Run on the display (labwc / Wayland)
@@ -81,10 +81,10 @@ SDL_VIDEODRIVER=dummy python -c "import winamp_player.app; print('ok')"   # sani
 The Pygame app needs the Pi's Wayland session (not SSH). Launch it onto the session:
 ```bash
 export XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-systemd-run --user --unit=winamp-ui \
+systemd-run --user --unit=spotamp-ui \
   --setenv=WAYLAND_DISPLAY=wayland-0 --setenv=SDL_VIDEODRIVER=wayland \
-  --working-directory=$HOME/WinAmpPlayer/pi \
-  $HOME/WinAmpPlayer/pi/venv/bin/python -m winamp_player
+  --working-directory=$HOME/SpotAmp/pi \
+  $HOME/SpotAmp/pi/venv/bin/python -m spotamp
 ```
 ## 4. HyperPixel 4.0 Square + kiosk autostart
 
@@ -110,12 +110,12 @@ Use the files in [`../deploy/`](../deploy/):
 
 ```bash
 mkdir -p ~/.config/systemd/user
-cp ~/WinAmpPlayer/deploy/winamp-kiosk.service ~/.config/systemd/user/
-cp ~/WinAmpPlayer/deploy/winamp-kiosk.sh ~/.config/winamp-kiosk.sh
-chmod +x ~/.config/winamp-kiosk.sh
+cp ~/SpotAmp/deploy/spotamp-kiosk.service ~/.config/systemd/user/
+cp ~/SpotAmp/deploy/spotamp-kiosk.sh ~/.config/spotamp-kiosk.sh
+chmod +x ~/.config/spotamp-kiosk.sh
 sudo loginctl enable-linger "$USER"       # user manager starts at boot
 systemctl --user daemon-reload
-systemctl --user enable --now winamp-kiosk.service
+systemctl --user enable --now spotamp-kiosk.service
 ```
 
 Set `fullscreen = true` in `config.toml` (fills the 720×720 panel and hides the
@@ -129,8 +129,8 @@ cursor). The launcher waits for the Wayland socket, so it's robust to boot timin
 ## 5. Remote control from a laptop (optional, dev)
 
 Add the laptop's SSH public key to the Pi's `~/.ssh/authorized_keys` for passwordless
-`ssh bkern@winamp.local` — handy for deploying/logging without a keyboard on the Pi.
+`ssh bkern@spotamp.local` — handy for deploying/logging without a keyboard on the Pi.
 
-> ⚠️ Gotcha: don't `pkill -f "python -m winamp_player"` over SSH — the pattern matches
+> ⚠️ Gotcha: don't `pkill -f "python -m spotamp"` over SSH — the pattern matches
 > the SSH command's own command line and kills your session. Use
-> `systemctl --user stop winamp-ui` instead.
+> `systemctl --user stop spotamp-ui` instead.

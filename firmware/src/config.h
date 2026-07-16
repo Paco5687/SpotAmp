@@ -1,4 +1,4 @@
-// WinAmp Physical Edition — RP2040 firmware configuration.
+// SpotAmp — RP2040 firmware configuration.
 // Pin assignments mirror hardware/diagrams/pico-pinout.svg — keep them in sync.
 #pragma once
 
