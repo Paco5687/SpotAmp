@@ -82,6 +82,7 @@ Datasheets for everything here: run [`datasheets/fetch.sh`](datasheets/) and see
 | Electrolytic caps 2200 µF/10 V ×2, inline fuse + holder, rocker/slide power switch | 8 |
 | M2.5/M3 machine screws, standoffs, heat-set inserts (for the printed case) | 10 |
 | **Aluminum knobs** (final build): 11× fader caps + 2× knurled encoder knobs — 3D-printed on the prototype | 25–40 |
+| **Kickstand hardware**: 2× adjustable-torque (position-control) hinges, rubber bumper feet ×6, 2× ø8 magnets + steel discs | 20 |
 
 ## Totals
 

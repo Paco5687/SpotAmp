@@ -6,7 +6,7 @@
 |---|---|
 | [**System wiring**](diagrams/system-wiring.svg) | Full power + data topology: battery → UPS → Pi/motor rail; USB to the RP2040 + DAC; the I2C expander bus (PCA9685/MPR121/MCP23017) out to the faders |
 | [**Pico pinout**](diagrams/pico-pinout.svg) | Every RP2040 pin assignment (19 of 26 used, spares marked) |
-| [**Front panel**](diagrams/front-panel.svg) | To-scale (4 px/mm) control layout with dimensions — includes the 210 mm height finding |
+| [**Front panel**](diagrams/front-panel.svg) | Concept sketch — **superseded by the dimensioned [cad/front-panel.dxf](cad/)**, the authoritative cut drawing |
 
 ![System wiring](diagrams/system-wiring.svg)
 
@@ -14,14 +14,14 @@
 
 ![Front panel](diagrams/front-panel.svg)
 
-> ⚠️ **Dimension findings** (from the to-scale drawing + the ALPS datasheet):
-> 60 mm fader travel pushes the body to **~210 mm tall**; fader bodies are
-> **18.5 mm wide × 26 mm deep**, so the 8-fader bank needs **~155 mm of width**
-> and the body **~32 mm of depth** — working envelope is now **~165 × 210 × 32 mm
-> (6.5″ × 8.3″ × 1.25″)**. Full analysis + options: [enclosure.md](enclosure.md).
-> Finalize in CAD (Phase 8).
+> ⚠️ **Dimension findings** (ALPS datasheet + the dimensioned cut drawing):
+> fader bodies are **18.5 mm wide × 26 mm deep × 106.5 mm long (M3 span 80 mm)**.
+> The 8-fader bank therefore needs ~155 mm of width and **~110 mm of height** —
+> honest envelope: **175 × 280 × 32 mm (6.9″ × 11″ × 1.25″)**, proven with real
+> clearances in **[cad/front-panel.dxf](cad/)** (the authoritative drawing).
+> Full analysis + the compact fallback: [enclosure.md](enclosure.md).
 
-## Front-panel layout (ASCII summary, portrait ≈127 × 210 mm)
+## Front-panel layout (ASCII summary — superseded by cad/, kept for orientation)
 
 Mirrors the software's regions so the code and the hardware agree:
 

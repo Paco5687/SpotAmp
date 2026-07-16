@@ -15,6 +15,7 @@ three facts that change the body:
 | Fader body is **18.5 mm wide** → min pitch ~19–20 mm | An 8-fader bank needs **~155 mm**, but the panel is 127 mm. **The 7-band + preamp bank does not fit a 5″ width.** Options below. |
 | Fader is **26 mm deep below the panel** | Body thickness grows from 25 mm to **~32 mm (1.25″)** (panel + 26 + wiring clearance), or the fader zone gets a raised rear bulge. |
 | Fader motor rated **10 V / ≤800 mA** | On our 5 V rail the slew is slower/weaker (workable, common in DIY). Optional: a small 9 V boost for the motor rail. Bench-test with fader #1 before deciding. |
+| **Fader body is ~106.5 mm LONG (M3 mounts 80 mm apart)** — found drawing the DXF | A *vertical* EQ fader needs ~110 mm of panel height, not the ~66 mm sketched earlier. The honest full stack (top module + volume + 73 mm screen + seek + EQ bank) sets the panel at **175 × 280 mm (6.9″ × 11″)** — which matches the Yanko render's real proportions. The laid-out proof: [cad/front-panel.dxf](cad/). |
 
 ### EQ-bank width options (decision pending)
 
@@ -24,9 +25,12 @@ three facts that change the body:
 | **B. 5 bands + preamp** | 6 × 20 = 120 ✓ fits 127 | fewer bands; protocol/firmware are per-band so it's a config change |
 | **C. Reduced build** (motorized volume + seek only, slim non-motorized pots for EQ) | narrow pots ~10 mm pitch ✓ | loses the animated-EQ showpiece |
 
-> The user's earlier call: "a little bigger than my initial dimensions is fine" —
-> so **Option A (~165 × 210 × 32 mm)** is the working default until CAD says
-> otherwise. The front-panel diagram will be redrawn at final dimensions in CAD.
+> Working default: **Option A at 175 × 280 × 32 mm** — the DXF in [cad/](cad/)
+> proves this closes with real clearances. If that's too big after holding a
+> cardboard mockup, the compact fallback is **non-motorized 45 mm slide pots for
+> the EQ** (panel shrinks to roughly 150 × 200) — the generator is parametric, so
+> the variant is a constants change, and the firmware already treats read-only
+> faders as a config difference.
 
 ## Design-for-machining rules (apply from the first CAD sketch)
 
@@ -92,6 +96,33 @@ three facts that change the body:
   reserves space for a **MAX9744 (I2C, same bus) + 5→12 V boost** and grille area
   for ~2″/5 W drivers — the "small boombox" tier is a one-board swap after bench
   listening, no redesign.
+
+## Kickstand (added 2026-07-17 — this is a DESKTOP device)
+
+Per the concept's pop-out stand: the device lives on a desk, leaning back —
+portable between rooms, not pocket-portable. Design decisions:
+
+- **Type**: a flat **fold-out leg** hinged across the rear at the EQ-module
+  height (lower third), Surface-style. In aluminum it's a machined flat plate —
+  looks fantastic anodized; on the prototype it's the same geometry printed.
+- **Hinges**: 2× **adjustable-torque (position-control) hinges** so the angle is
+  continuously adjustable and holds anywhere (~$6–12 ea). Cheaper fallback: a
+  plain piano hinge + a fold-out wire strut into detent notches (two angles).
+- **Angle range**: 0° (flush) to ~40° open → face angle ~70–80° from the desk,
+  matching the render and comfortable for fader reach + screen viewing.
+- **Tip resistance — the physics that matters**: users *push* faders and buttons
+  (1–3 N) near the top of a 280 mm face. The leg tip must land **well behind the
+  center of mass** (leg ≥ 120 mm long), with **rubber feet on the leg tip and the
+  body's bottom edge**. The battery pack (the heaviest part) mounts LOW in the
+  body — it's the counterweight.
+- **Flush stowage**: the rear tray gets a **recessed pocket** so the closed leg
+  sits flush (machinable pocket — large corner radii; printable as-is). A small
+  **magnet + steel disc** holds it closed with a satisfying snap.
+- **Don't-block list**: the leg (open or closed) must not cover the USB-C charge
+  port, the power switch, the thermal-pad zone (rear tray = heatsink), or the
+  **Wi-Fi antenna window** — place the pocket accordingly in CAD.
+- The rear tray + stand get their own generated drawing when we do the body CAD
+  (the parametric generator extends to it — same source of truth as the panel).
 
 ## Knobs & finish
 
