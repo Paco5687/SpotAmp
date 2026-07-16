@@ -1,5 +1,13 @@
 # Layout concepts (exploration — not the authoritative drawing)
 
+**concept-c — "the in-between" (220 × 280 mm)**: the vibe-keeper. Screen stays
+**centered** (classic stacked-module composition), full **10-band EQ + preamp**,
+and **symmetric stereo grille fields** flanking the screen (L/R where stereo
+wants them). No pot column. Button columns cleared of the HyperPixel board edge
+(3D check). Owner feedback path: A = vibe but 7-band · B = 10-band but vibe lost
+· **C = both**.
+
+
 **concept-b** (225 × 280 mm): screen offset left, right-hand pot column
 (HP-vol / brightness / 2 assignable), one large speaker-grille field, and the
 **full classic 10-band EQ + preamp** (11 motorized faders). Generated from a
