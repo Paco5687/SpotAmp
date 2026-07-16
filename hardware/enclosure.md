@@ -15,6 +15,7 @@ three facts that change the body:
 | Fader body is **18.5 mm wide** → min pitch ~19–20 mm | An 8-fader bank needs **~155 mm**, but the panel is 127 mm. **The 7-band + preamp bank does not fit a 5″ width.** Options below. |
 | Fader is **26 mm deep below the panel** | Body thickness grows from 25 mm to **~32 mm (1.25″)** (panel + 26 + wiring clearance), or the fader zone gets a raised rear bulge. |
 | Fader motor rated **10 V / ≤800 mA** | On our 5 V rail the slew is slower/weaker (workable, common in DIY). Optional: a small 9 V boost for the motor rail. Bench-test with fader #1 before deciding. |
+| **Fader body is ~106.5 mm LONG (M3 mounts 80 mm apart)** — found drawing the DXF | A *vertical* EQ fader needs ~110 mm of panel height, not the ~66 mm sketched earlier. The honest full stack (top module + volume + 73 mm screen + seek + EQ bank) sets the panel at **175 × 280 mm (6.9″ × 11″)** — which matches the Yanko render's real proportions. The laid-out proof: [cad/front-panel.dxf](cad/). |
 
 ### EQ-bank width options (decision pending)
 
@@ -24,9 +25,12 @@ three facts that change the body:
 | **B. 5 bands + preamp** | 6 × 20 = 120 ✓ fits 127 | fewer bands; protocol/firmware are per-band so it's a config change |
 | **C. Reduced build** (motorized volume + seek only, slim non-motorized pots for EQ) | narrow pots ~10 mm pitch ✓ | loses the animated-EQ showpiece |
 
-> The user's earlier call: "a little bigger than my initial dimensions is fine" —
-> so **Option A (~165 × 210 × 32 mm)** is the working default until CAD says
-> otherwise. The front-panel diagram will be redrawn at final dimensions in CAD.
+> Working default: **Option A at 175 × 280 × 32 mm** — the DXF in [cad/](cad/)
+> proves this closes with real clearances. If that's too big after holding a
+> cardboard mockup, the compact fallback is **non-motorized 45 mm slide pots for
+> the EQ** (panel shrinks to roughly 150 × 200) — the generator is parametric, so
+> the variant is a constants change, and the firmware already treats read-only
+> faders as a config difference.
 
 ## Design-for-machining rules (apply from the first CAD sketch)
 

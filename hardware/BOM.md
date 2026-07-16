@@ -81,7 +81,7 @@ faders, so this is a config change, not a rewrite.
 
 | Part | Notes | ~$ |
 |---|---|---|
-| Enclosure (book form, working envelope ~165×210×32 mm — see [enclosure.md](enclosure.md)) | FDM prototype (PETG/ABS), CNC anodized aluminum final. | 15+ |
+| Enclosure (book form, ~175×280×32 mm, proven in cad/ — see [enclosure.md](enclosure.md)) | FDM prototype (PETG/ABS), CNC anodized aluminum final. | 15+ |
 | Fader knob caps, standoffs, JST wiring, protoboard/PCB | | 20 |
 
 ## Rough total
