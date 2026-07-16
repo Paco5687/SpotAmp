@@ -28,7 +28,7 @@ from .controls import (
 )
 from .images import ImageCache
 from .library import BrowseState, make_library
-from .models import EQ_BANDS, PlaybackStatus, Track
+from .models import EQ_BANDS, PlaybackStatus
 from .power import make_battery
 from .spotify import make_backend
 from .spotify_web import make_web
@@ -55,11 +55,8 @@ class App:
         self.images = ImageCache()
         self.screen = ScreenUI(self.surface, self.on_action, self.images)
         self.browse = BrowseState()
-        self.browse.can_play_followed = getattr(self.backend, "real_playback", False)
         self.library, msg = make_library(self.web)
         if self.library is not None:
-            self.browse.has_library = True
-            self.browse.view = "library"
             self.browse.loading = True
             self.library.start()
         else:
@@ -72,9 +69,13 @@ class App:
         self._last_sent: dict[int, int] = {}  # last target per fader (avoid spam)
         self.running = True
 
-        # Populate the Up Next view for backends that don't fetch the queue
-        # themselves (e.g. librespot) — poll the Web API queue off-thread.
-        if self.web is not None and not getattr(self.backend, "populates_queue", False):
+        # Populate the Up Next view for real-playback backends that don't fetch
+        # the queue themselves (librespot) — poll the Web API queue off-thread.
+        # (Mock playback shows its own playlist; polling the account's real
+        # queue there would mismatch what's "playing".)
+        if (self.web is not None
+                and getattr(self.backend, "real_playback", False)
+                and not getattr(self.backend, "populates_queue", False)):
             threading.Thread(target=self._queue_loop, daemon=True).start()
 
     def _queue_loop(self) -> None:
@@ -130,7 +131,6 @@ class App:
         if not (0 <= index < len(self.browse.playlists)):
             return
         pl = self.browse.playlists[index]
-        self.browse.current_playlist = pl.name
         if getattr(self.backend, "real_playback", False):
             # Play the playlist directly on the device — works for owned AND
             # followed playlists (no tracklist read needed; the Up Next view
@@ -139,12 +139,6 @@ class App:
         elif self.library and pl.owned:
             # Mock/dev: load the tracklist so there's something to simulate.
             self.library.open_playlist(pl)
-
-    def _device_hint(self) -> str:
-        err = getattr(self.backend, "last_error", "")
-        if "404" in err or "NO_ACTIVE_DEVICE" in err.upper():
-            return "No active Spotify device — open the Spotify app (or start go-librespot) and try again."
-        return f"Couldn't start playback: {err}" if err else "Couldn't start playback."
 
     def _pump_library(self) -> None:
         if not self.library:
@@ -159,17 +153,8 @@ class App:
                         self.images.get(pl.image_url, (40, 40))
             elif kind == "tracks":
                 playlist, tracks = payload
-                self.browse.current_playlist = playlist.name
-                self.browse.view = "playlist"
-                if tracks:
-                    self.browse.note = ""
+                if tracks:  # mock path only; empty playlists just stay put
                     self.backend.load_tracks(tracks, context_uri=playlist.uri)
-                else:
-                    # We only fetch tracks for owned playlists, so empty = empty.
-                    self.browse.note = "This playlist has no tracks."
-                    self.backend.stop()
-                    self.backend.state.playlist = []
-                    self.backend.state.track = Track()
             elif kind == "error":
                 self.browse.error = str(payload)
                 self.browse.loading = False
@@ -213,6 +198,10 @@ class App:
                 ButtonId.NEXT.value: ("next", {}),
                 ButtonId.SHUFFLE.value: ("toggle_shuffle", {}),
                 ButtonId.REPEAT.value: ("cycle_repeat", {}),
+                # Dedicated view buttons drive the central screen.
+                ButtonId.VIEW_NOW_PLAYING.value: ("set_view", {"name": "now_playing"}),
+                ButtonId.VIEW_PLAYLISTS.value: ("set_view", {"name": "playlists"}),
+                ButtonId.VIEW_QUEUE.value: ("set_view", {"name": "queue"}),
             }
             if ev.id in mapping:
                 a, kw = mapping[ev.id]

@@ -69,59 +69,44 @@ hardware; they're imported lazily so mock mode doesn't require them.
 
 ```
 winamp_player/
-├── __main__.py      # python -m winamp_player
-├── app.py           # main loop, action routing, MOTOR SYNC
+├── __main__.py      # python -m winamp_player (also: `authorize` subcommand)
+├── app.py           # main loop, action routing, MOTOR SYNC, queue/battery polls
 ├── config.py        # config.toml loader (zero-config defaults)
 ├── models.py        # PlayerState / Track — the source of truth
-├── spotify.py       # MockPlayer + LibrespotPlayer behind PlayerBackend
+├── spotify.py       # MockPlayer / WebApiPlayer / LibrespotPlayer (PlayerBackend)
+├── spotify_web.py   # Web API client: playlists, queue, playback control
+├── spotify_auth.py  # loopback PKCE OAuth + token cache
+├── library.py       # async playlist browsing (BrowseState)
+├── images.py        # async album-art download + cache
+├── power.py         # battery sources (mock / Geekworm X728)
 ├── controls.py      # serial protocol + MockControls / SerialControls
 └── ui/
-    ├── skin.py      # palette + portrait layout rectangles
-    └── display.py   # rendering + mouse/touch -> actions
+    ├── skin.py      # palette + Rect drawing helper
+    └── screen.py    # the multi-view screen UI (Now Playing / Playlists / Up Next)
 ```
 
+Tests live in [`tests/`](tests/) — run `python -m pytest tests` from `pi/`.
 See [../docs/architecture.md](../docs/architecture.md) for how it all fits.
 
-## Playlist browser
+## Playback backends
 
-Once authorized (above), the touchscreen opens on **your real Spotify
-playlists** with album-art thumbnails (loaded async so the UI never blocks).
-Tap a playlist → tap a track → it plays. The **eject** button (or `b`) returns
-to the library. Without a token it falls back to a demo playlist.
+Set `backend` in `config.toml`:
 
-### Playing followed playlists (`backend = "webapi"`)
+| `backend` | What plays the audio | Use it for |
+|---|---|---|
+| `mock` (default) | nothing — simulated playback of a demo/owned playlist | UI dev on a laptop |
+| `librespot` | **go-librespot on this machine** (the device path) | the real device |
+| `webapi` | any active Spotify Connect device via the Web API | laptop dev with real audio |
 
-Spotify Dev Mode can't *read the track list* of playlists you don't own, but it
-**can play them**. So there are two playback modes (set `backend` in `config.toml`):
-
-| `backend` | Owned playlists | Followed / editorial playlists | Audio |
-|---|---|---|---|
-| `mock` (default) | tracklist + simulated playback | flagged "dev-mode locked" | none (simulated) |
-| `webapi` | tracklist + **real playback** | **plays** (now-playing view, no tracklist) | real, on an active device |
-
-To use `webapi` **now**, on your laptop:
-1. Set `backend = "webapi"` in `config.toml`.
-2. **Open the Spotify desktop or phone app** (it becomes the "active device" to play on).
-3. Run the app. Owned playlists play with a tracklist; followed playlists show a
-   **now-playing** card (art, title, progress) mirrored from the real player.
-
-On the Pi, the "active device" becomes **go-librespot** instead of the Spotify
-app — same code path, no phone. If you see *"No active Spotify device,"* nothing
-is available to play on yet.
-
-### "Up Next" tracklist
-
-In `webapi` mode the now-playing view shows an **UP NEXT** list from the Spotify
-**playback queue** (`GET /me/player/queue`). This gives you a tracklist for
-*anything* playing — including followed/editorial playlists whose tracks Dev Mode
-won't let us read directly, and whatever's playing on another device. It shows
-what's coming up (not the full playlist history).
+Tapping a playlist plays it **by context URI**, which works for owned *and*
+followed/editorial playlists (Dev Mode only restricts *reading* their track
+lists, not playing them). The **Up Next** view shows the live playback queue
+(`GET /me/player/queue`), so you still get a tracklist for anything playing.
 
 ## Notes / TODO
 
-- **Album art** is now real (fetched + cached from the Web API in `images.py`).
-  Placeholder gradient shows only until each image finishes downloading.
-- **Spectrum** is simulated when no audio tap is present; on the Pi, feed real
-  FFT magnitudes into `PlayerState.spectrum`.
+- **Album art** is real (fetched + cached async in `images.py`); a drawn
+  placeholder shows until each image lands.
+- **Spectrum analyzer** returns in Phase 4 with the real FFT audio tap.
 - **EQ** currently just stores band gains; the ALSA software-EQ pipeline that
-  applies them is milestone M5 (see architecture roadmap).
+  applies them is Phase 4 (see the project board).

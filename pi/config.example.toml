@@ -22,7 +22,6 @@ battery_low_shutdown = false             # only ever acts on real x728 hardware
 fullscreen = false                       # true on the device's LCD
 window_size = [720, 720]                 # square — HyperPixel 4.0 Square (720x720)
 fps = 30
-show_hardware_legend = true              # shade physical vs touchscreen regions
 
 # Spotify Web API — for playlists, album art, and directing playback.
 # Create an app at https://developer.spotify.com/dashboard. Uses PKCE, so only

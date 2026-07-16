@@ -52,6 +52,10 @@ class ButtonId(Enum):
     SHUFFLE = 6
     REPEAT = 7
     EQ_TOGGLE = 8
+    # Dedicated view-switch buttons for the central screen (one per view).
+    VIEW_NOW_PLAYING = 9
+    VIEW_PLAYLISTS = 10
+    VIEW_QUEUE = 11
 
 
 FADER_MAX = 1023  # 10-bit ADC range on the microcontroller

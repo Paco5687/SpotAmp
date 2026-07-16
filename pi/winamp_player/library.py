@@ -17,15 +17,10 @@ from .spotify_web import Playlist, SpotifyWeb
 
 @dataclass
 class BrowseState:
-    """UI navigation state (distinct from PlayerState)."""
+    """Library state the screen UI renders (distinct from PlayerState)."""
 
-    view: str = "playlist"                 # "library" | "playlist"
-    has_library: bool = False              # is a real Spotify library available?
-    can_play_followed: bool = False        # backend can play playlists you follow
-    loading: bool = False
     playlists: list[Playlist] = field(default_factory=list)
-    current_playlist: str = ""             # name of the opened playlist
-    note: str = ""                         # transient message in the track view
+    loading: bool = False
     error: str = ""
 
 

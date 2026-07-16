@@ -43,7 +43,9 @@ ignored by the parser).
 | 9 | Seek (tracks song position) | ✅ |
 
 **Buttons** (`ButtonId`): 0 prev · 1 play · 2 pause · 3 stop · 4 next ·
-5 eject · 6 shuffle · 7 repeat · 8 eq-toggle.
+5 eject · 6 shuffle · 7 repeat · 8 eq-toggle · **9 view:now-playing ·
+10 view:playlists · 11 view:queue** (the dedicated view-switch buttons for the
+central screen).
 
 ## Example exchange
 

@@ -23,6 +23,8 @@ faders** for a graphic EQ plus volume and a seek fader that follows the song.
 - Motorized faders that physically track playback and EQ presets.
 
 ## Status
-Early but working: desktop mock UI, real Spotify browsing + playback. Hardware
-bring-up in progress. See the [repo README](https://github.com/Paco5687/WinAmpPlayer)
-for the live milestone list.
+The core device works: a Pi 4 B that **boots straight into its own multi-view UI**
+on a HyperPixel 4.0 Square touchscreen and plays Spotify **standalone** (no phone).
+In progress: physical controls (RP2040), motorized faders, EQ + spectrum, battery,
+enclosure. See the [project board](https://github.com/users/Paco5687/projects/4)
+and [repo README](https://github.com/Paco5687/WinAmpPlayer).

@@ -12,11 +12,13 @@ Mirrors the Pygame mock's regions so the software and the hardware agree:
 │  ░░▓▓█�e▓░  spectrum (on LCD strip)  44 kHz │   (buttons + small OLED/LCD
 │  |◀  ▶  ▮▮  ■  ▶|  ⏏   (transport buttons) │    readout + tactile buttons)
 ├───────────────────────────────────────────┤
-│                                           │
-│   ┌────────┐   1. M83 - Midnight City     │   SCREEN
-│   │ album  │   2. Daft Punk - Digital...  │   4″ IPS capacitive
-│   │  art   │   3. Massive Attack - Tear.. │   touchscreen
-│   └────────┘   4. ...                     │   (playlist + art)
+│  [NP] [PL] [Q]  (view-switch buttons)     │   PHYSICAL (ButtonId 9–11)
+│   ┌─────────────────────────────┐         │
+│   │                             │         │   SCREEN
+│   │   HyperPixel 4.0 Square     │         │   720×720 DPI touchscreen
+│   │   (multi-view UI: now       │         │   ⚠ occupies ALL 40 GPIO —
+│   │   playing/playlists/queue)  │         │   controls/battery on RP2040,
+│   └─────────────────────────────┘         │   audio via USB DAC
 │                                           │
 ├───────────────────────────────────────────┤
 │  EQ:  ▮ ▮ ▮ ▮ ▮ ▮ ▮   ▮(pre)              │   PHYSICAL panel

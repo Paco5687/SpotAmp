@@ -17,7 +17,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -r pi/requirements.txt ruff
+        run: pip install -r pi/requirements.txt ruff pytest
 
       - name: Lint (critical errors only)
         # Syntax errors + undefined names. Style is not enforced (yet).
@@ -25,6 +25,13 @@ jobs:
 
       - name: Byte-compile
         run: python -m compileall -q pi/winamp_player
+
+      - name: Unit tests
+        working-directory: pi
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: python -m pytest tests -q
 
       - name: Import smoke test (headless)
         working-directory: pi
