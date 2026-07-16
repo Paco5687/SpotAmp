@@ -97,6 +97,33 @@ three facts that change the body:
   for ~2″/5 W drivers — the "small boombox" tier is a one-board swap after bench
   listening, no redesign.
 
+## Kickstand (added 2026-07-17 — this is a DESKTOP device)
+
+Per the concept's pop-out stand: the device lives on a desk, leaning back —
+portable between rooms, not pocket-portable. Design decisions:
+
+- **Type**: a flat **fold-out leg** hinged across the rear at the EQ-module
+  height (lower third), Surface-style. In aluminum it's a machined flat plate —
+  looks fantastic anodized; on the prototype it's the same geometry printed.
+- **Hinges**: 2× **adjustable-torque (position-control) hinges** so the angle is
+  continuously adjustable and holds anywhere (~$6–12 ea). Cheaper fallback: a
+  plain piano hinge + a fold-out wire strut into detent notches (two angles).
+- **Angle range**: 0° (flush) to ~40° open → face angle ~70–80° from the desk,
+  matching the render and comfortable for fader reach + screen viewing.
+- **Tip resistance — the physics that matters**: users *push* faders and buttons
+  (1–3 N) near the top of a 280 mm face. The leg tip must land **well behind the
+  center of mass** (leg ≥ 120 mm long), with **rubber feet on the leg tip and the
+  body's bottom edge**. The battery pack (the heaviest part) mounts LOW in the
+  body — it's the counterweight.
+- **Flush stowage**: the rear tray gets a **recessed pocket** so the closed leg
+  sits flush (machinable pocket — large corner radii; printable as-is). A small
+  **magnet + steel disc** holds it closed with a satisfying snap.
+- **Don't-block list**: the leg (open or closed) must not cover the USB-C charge
+  port, the power switch, the thermal-pad zone (rear tray = heatsink), or the
+  **Wi-Fi antenna window** — place the pocket accordingly in CAD.
+- The rear tray + stand get their own generated drawing when we do the body CAD
+  (the parametric generator extends to it — same source of truth as the panel).
+
 ## Knobs & finish
 
 - **Final build**: aluminum fader caps (T-bar or rectangular, for the ALPS 9-T
