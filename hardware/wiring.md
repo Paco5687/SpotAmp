@@ -1,22 +1,46 @@
 # Wiring & physical layout
 
-## Front-panel layout (portrait, ≈127 mm wide × 200 mm tall)
+## Schematics
 
-Mirrors the Pygame mock's regions so the software and the hardware agree:
+| Diagram | What it shows |
+|---|---|
+| [**System wiring**](diagrams/system-wiring.svg) | Full power + data topology: battery → UPS → Pi/motor rail; USB to the RP2040 + DAC; the I2C expander bus (PCA9685/MPR121/MCP23017) out to the faders |
+| [**Pico pinout**](diagrams/pico-pinout.svg) | Every RP2040 pin assignment (19 of 26 used, spares marked) |
+| [**Front panel**](diagrams/front-panel.svg) | To-scale (4 px/mm) control layout with dimensions — includes the 210 mm height finding |
+
+![System wiring](diagrams/system-wiring.svg)
+
+![Pico pinout](diagrams/pico-pinout.svg)
+
+![Front panel](diagrams/front-panel.svg)
+
+> ⚠️ **Dimension findings** (from the to-scale drawing + the ALPS datasheet):
+> 60 mm fader travel pushes the body to **~210 mm tall**; fader bodies are
+> **18.5 mm wide × 26 mm deep**, so the 8-fader bank needs **~155 mm of width**
+> and the body **~32 mm of depth** — working envelope is now **~165 × 210 × 32 mm
+> (6.5″ × 8.3″ × 1.25″)**. Full analysis + options: [enclosure.md](enclosure.md).
+> Finalize in CAD (Phase 8).
+
+## Front-panel layout (ASCII summary, portrait ≈127 × 210 mm)
+
+Mirrors the software's regions so the code and the hardware agree:
 
 ```
 ┌───────────────────────────────────────────┐  ← ~127 mm wide
 │  WINAMP · PHYSICAL EDITION       (title)   │
 ├───────────────────────────────────────────┤
-│  0:42        [ LCD readout ]     320 kbps  │   PHYSICAL panel
-│  ░░▓▓█�e▓░  spectrum (on LCD strip)  44 kHz │   (buttons + small OLED/LCD
-│  |◀  ▶  ▮▮  ■  ▶|  ⏏   (transport buttons) │    readout + tactile buttons)
+│  0:42   [ amber OLED readout ]   320 kbps  │   PHYSICAL panel
+│  ░░▓▓██▓░ title + spectrum       44 kHz    │   SSD1322 256×64 SPI OLED on the
+│  |◀ ▶ ▮▮ ■ ▶| SHUF LOOP PRESET [==BAL==]   │   RP2040 (`DISP` commands) +
+│  [====VOL (motorized)====]                 │   buttons + balance pot + volume
 ├───────────────────────────────────────────┤
-│                                           │
-│   ┌────────┐   1. M83 - Midnight City     │   SCREEN
-│   │ album  │   2. Daft Punk - Digital...  │   4″ IPS capacitive
-│   │  art   │   3. Massive Attack - Tear.. │   touchscreen
-│   └────────┘   4. ...                     │   (playlist + art)
+│  [NP] [PL] [Q]  (view-switch buttons)     │   PHYSICAL (ButtonId 9–11)
+│   ┌─────────────────────────────┐         │
+│   │                             │         │   SCREEN
+│   │   HyperPixel 4.0 Square     │         │   720×720 DPI touchscreen
+│   │   (multi-view UI: now       │         │   ⚠ occupies ALL 40 GPIO —
+│   │   playing/playlists/queue)  │         │   controls/battery on RP2040,
+│   └─────────────────────────────┘         │   audio via USB DAC
 │                                           │
 ├───────────────────────────────────────────┤
 │  EQ:  ▮ ▮ ▮ ▮ ▮ ▮ ▮   ▮(pre)              │   PHYSICAL panel
@@ -26,27 +50,39 @@ Mirrors the Pygame mock's regions so the software and the hardware agree:
 └───────────────────────────────────────────┘
 ```
 
-## Pico (RP2040) pin plan
+## Pico (RP2040) pin plan — expander architecture
 
-> Indicative — adjust to your board revision. The Pico has **3 ADC** channels
-> (GP26–28), so all analog fader/pot wipers go through the 16-ch mux.
+**Direct-wiring does not fit**: 10 motors × 2 PWM + 10 touch + 13 buttons +
+mux + encoders ≈ **55 signals vs the Pico's 26 GPIO**. Everything high-count
+rides one I2C bus instead:
 
-| Function | Pico pins |
-|---|---|
-| Mux (CD74HC4067) select | GP2, GP3, GP4, GP5 (S0–S3) |
-| Mux common out → ADC | GP26 (ADC0) |
-| Second mux (if needed) common | GP27 (ADC1) |
-| Motor drivers (DRV8833) IN pins | 2 PWM pins per fader → GP6..GP21 as needed |
-| Fader touch-sense lines | digital GPIO (or a touch IC on I²C) |
-| Buttons | matrix or direct GPIO (debounced in firmware) |
-| Encoders (EC11) | 2 GPIO each + push |
-| WS2812 LEDs | 1 GPIO (PIO-driven) |
-| USB | to Pi (CDC serial + power) |
+```
+                        ┌── PCA9685 #1 ──▶ DRV8833 ×3 ──▶ fader motors 0–5
+Pico I2C (2 pins) ──────┼── PCA9685 #2 ──▶ DRV8833 ×2 ──▶ fader motors 6–9
+                        ├── MPR121  ──▶ 10 fader touch-sense lines
+                        └── MCP23017 ──▶ 13 panel buttons
+```
+
+| Function | Pico pins | Count |
+|---|---|---|
+| I2C bus (PCA9685 ×2, MPR121, MCP23017) | GP4/GP5 | 2 |
+| Mux (CD74HC4067) select S0–S3 | GP6–GP9 | 4 |
+| Mux common out → ADC (wipers + balance pot) | GP26 (ADC0) | 1 |
+| OLED readout (SSD1322, SPI + DC/CS/RST) | GP10–GP14 | 5 |
+| Encoders (EC11) ×2 + push | GP16–GP21 | 6 |
+| WS2812 LEDs | GP22 (PIO) | 1 |
+| USB | to Pi (CDC serial + power) | — |
+| **Total** | | **19 of 26** ✅ |
 
 Each motorized fader needs **three** connections handled together:
-1. **Motor** → an H-bridge channel (2 PWM lines) for drive direction/speed.
+1. **Motor** → a DRV8833 channel, its two inputs driven by PCA9685 outputs.
 2. **Wiper** → a mux input → ADC, for the PID's position feedback.
-3. **Touch** → a digital/touch line, so the Pi knows to stop driving it.
+3. **Touch** → an MPR121 electrode, so the Pi knows to stop driving it.
+
+> **PWM-frequency caveat:** the PCA9685 tops out at ~1.5 kHz, which is audible as
+> a faint buzz *while a fader is moving*. Moves last well under a second, and the
+> **reduced build** (only volume + seek motorized, driven directly from Pico PWM
+> pins at 20 kHz+) sidesteps it completely.
 
 ## Control loop (firmware)
 
@@ -68,8 +104,9 @@ See `firmware/src/main.cpp` for the skeleton.
 - LiPo → power board (5 V boost) → Pi 4; motors get their own regulated rail off
   the same pack (H-bridges draw spikes — decouple well, keep motor ground and
   logic ground joined at one star point).
-- I2S DAC on the Pi's I2S pins (or a HAT) → 3.5 mm headphone jack; optional
-  PAM8302 + small speaker for a built-in speaker.
+- **USB DAC** on a Pi USB port → 3.5 mm headphone jack (the HyperPixel's DPI
+  takes the I2S pins, so no GPIO DAC); optional PAM8302 + small speaker for a
+  built-in speaker. Pi USB budget: RP2040 + DAC = 2 of 4 ports.
 
 ## Enclosure
 

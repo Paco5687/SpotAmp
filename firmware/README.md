@@ -17,12 +17,21 @@ pio device monitor      # watch the serial link
 
 ## What it does
 
-- Reads buttons (debounced), encoders, pots, and all fader wiper positions
-  (through a CD74HC4067 analog mux, since the Pico has only 3 ADC channels).
+- Reads buttons (via MCP23017), encoders, the balance pot, and all fader wiper
+  positions (through a CD74HC4067 analog mux, since the Pico has only 3 ADC
+  channels).
 - Runs a per-fader **PID loop** at ~1 kHz driving each motorized fader toward the
   target the Pi last sent (`FADER <id> <pos>`), and yields the motor while the
-  user is touching that fader.
+  user is touching that fader (MPR121 touch electrodes).
+- Drives the **amber OLED readout** (SSD1322 over SPI) from `DISP` commands the
+  Pi streams (title / time / stream info).
 - Emits `EV …` events upstream (button presses, user fader moves, touch, encoders).
+
+> **I/O architecture:** motor PWM goes through **2× PCA9685** and buttons/touch
+> through **MCP23017/MPR121**, all on one I2C bus — direct-wiring doesn't fit the
+> Pico's 26 GPIO. Full pin budget in [../hardware/wiring.md](../hardware/wiring.md).
+> The `main.cpp` skeleton still drives one fader on direct pins for bring-up;
+> switch to the PCA9685 when scaling past one.
 
 `src/main.cpp` is a well-commented skeleton — the structure and protocol are
 real; pin numbers and PID gains are placeholders to tune on the bench. Start by

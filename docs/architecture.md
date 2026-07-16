@@ -31,10 +31,14 @@ if its ecosystem matures — it could collapse both boards into one.
 ## Audio path
 
 ```
-Spotify ──▶ go-librespot ──▶ ALSA (software graphic EQ) ──▶ I2S DAC ──▶ headphones/speaker
+Spotify ──▶ go-librespot ──▶ ALSA (software graphic EQ) ──▶ USB DAC ──▶ headphones/speaker
                                     ▲                  │
                           EQ gains from faders    audio tap ──▶ FFT ──▶ spectrum bars (UI)
 ```
+
+> The DAC is **USB** (not a GPIO I2S HAT) because the HyperPixel display's DPI
+> interface consumes all 40 GPIO pins, including I2S. The Pi's 3.5 mm jack works
+> for bring-up.
 
 - **go-librespot** is a full Spotify client that streams and decodes audio
   directly (requires Premium). It authenticates **standalone via interactive
@@ -53,7 +57,9 @@ Spotify ──▶ go-librespot ──▶ ALSA (software graphic EQ) ──▶ I2
 | Module | Responsibility |
 |---|---|
 | `models.py` | `PlayerState`, `Track` — the single source of truth the UI renders |
-| `spotify.py` | `MockPlayer` (simulation) and `LibrespotPlayer` (real go-librespot) behind one `PlayerBackend` interface |
+| `spotify.py` | `MockPlayer` (simulation), `WebApiPlayer` (drive any Connect device), `LibrespotPlayer` (the on-device player) behind one `PlayerBackend` interface |
+| `spotify_web.py` / `spotify_auth.py` | Web API client (playlists, queue, control) + loopback-PKCE auth |
+| `library.py` / `images.py` / `power.py` | Async playlist browsing, album-art cache, battery sources |
 | `controls.py` | Serial protocol + `MockControls` / `SerialControls` |
 | `ui/skin.py` | Palette + shared drawing helpers |
 | `ui/screen.py` | Compact **multi-view** screen UI (Now Playing / Playlists / Queue) for the square LCD; turns touch/buttons into actions |
@@ -74,33 +80,40 @@ be from `PlayerState` (volume, seek progress, EQ band gains) and sends a
 
 `PlayerBackend` is a `Protocol`. `MockPlayer` advances a demo playlist with no
 network so the entire UI is buildable on a laptop. `LibrespotPlayer` maps the
-same methods onto go-librespot's `/player/*` endpoints. Swap via `config.toml`.
-
-## Deployment on the Pi
-
-1. `go-librespot` as a systemd service, authenticated once via interactive
-   OAuth (standalone; see [spotify-setup.md](spotify-setup.md)).
-2. ALSA configured with the EQ plugin between librespot and the DAC.
-3. The Pygame app launched fullscreen on boot (`fullscreen = true`) against the
-   DSI/HDMI LCD, kiosk-style.
-4. RP2040 flashed and enumerated at `/dev/ttyACM0`.
+same methods onto go-librespot's local HTTP API (the on-device path);
+`WebApiPlayer` drives any active Spotify Connect device through the Web API
+(useful for laptop dev with real audio). Swap via `config.toml`.
 
 ## Central screen & UI direction
 
-The current full-window WinAmp skin is **temporary scaffolding** that proved the
-plumbing. The real device is **physical-first**: transport, EQ, and faders are
-hardware; the screen is a small **square** LCD (**HyperPixel 4.0 Square, 720×720**)
-showing a compact **multi-view** UI — one view at a time — switched by **dedicated
-physical buttons**. v1 views: Now Playing, Playlist selector, Play Queue (Search
-later). Playback control uses `backend = "librespot"` (go-librespot's local API on
-:3678), so control stays on the Pi — no cloud round-trip. The HyperPixel's DPI takes
-all GPIO, so audio → USB DAC and battery sensing → RP2040 (see hardware/BOM.md).
+The device is **physical-first**: transport, EQ, and faders are hardware; the
+screen is a small **square** LCD (**HyperPixel 4.0 Square, 720×720**) showing the
+compact **multi-view** UI in `ui/screen.py` — one view at a time, switched by
+**dedicated physical buttons** (ButtonId 9–11 in the serial protocol; on-screen
+tabs and keys `1`/`2`/`3` in dev). v1 views: Now Playing, Playlist selector, Play
+Queue (Search later). Playback control uses `backend = "librespot"`
+(go-librespot's local API on :3678), so control stays on the Pi — no cloud
+round-trip. The HyperPixel's DPI takes all GPIO, so audio → USB DAC and battery
+sensing → RP2040 (see hardware/BOM.md).
+
+## Deployment on the Pi
+
+The full, tested procedure is **[pi-bringup.md](pi-bringup.md)**. In short:
+
+1. `go-librespot` as a systemd service, authenticated once via interactive
+   OAuth (standalone; see [spotify-setup.md](spotify-setup.md)).
+2. HyperPixel 4.0 Square via the `vc4-kms-dpi-hyperpixel4sq` overlay; rotation
+   done at the **compositor** level so touch follows the display.
+3. The UI as a systemd **user** service (kiosk): boots straight into the app,
+   fullscreen, cursor hidden (`deploy/winamp-kiosk.*`).
+4. *(Phase 4)* ALSA EQ between librespot and the USB DAC.
+5. *(Phase 5)* RP2040 flashed and enumerated at `/dev/ttyACM0`.
 
 ## Roadmap
 
-1. **M1 — Desktop mock** ✅ full UI + logic, no hardware.
-2. **M2 — Spotify real** — go-librespot transport + Web API playlists/art.
-3. **M3 — Controls** — RP2040 buttons/pots/encoders over serial (non-motorized).
-4. **M4 — Motors** — motorized faders + PID + motor sync on real hardware.
-5. **M5 — Audio EQ + spectrum** — ALSA EQ the faders drive; FFT spectrum tap.
-6. **M6 — Enclosure** — 3D-printed book-form body, battery, assembly.
+Tracked live on the **[project board](https://github.com/users/Paco5687/projects/4)**
+(milestones Phase 1–9 plus "UI Redesign & Central Screen"). Done so far: desktop
+mock, Spotify integration (auth/browse/playback/queue), standalone audio on the
+Pi, HyperPixel + kiosk autostart, the multi-view screen UI. Next up:
+playlist-detail view + list scrolling, RP2040 physical controls, motorized
+faders, software EQ + real spectrum, power/battery, enclosure.

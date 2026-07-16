@@ -52,6 +52,18 @@ class ButtonId(Enum):
     SHUFFLE = 6
     REPEAT = 7
     EQ_TOGGLE = 8
+    # Dedicated view-switch buttons for the central screen (one per view).
+    VIEW_NOW_PLAYING = 9
+    VIEW_PLAYLISTS = 10
+    VIEW_QUEUE = 11
+    # Cycles EQ presets — the faders physically animate into each curve.
+    EQ_PRESET = 12
+
+
+class PotId(Enum):
+    """Non-motorized analog controls, reported as ``EV POT <id> <value>``."""
+
+    BALANCE = 0
 
 
 FADER_MAX = 1023  # 10-bit ADC range on the microcontroller
@@ -89,6 +101,25 @@ def cmd_fader_release(fader: FaderId) -> str:
 
 def cmd_led(index: int, r: int, g: int, b: int) -> str:
     return f"LED {index} {r} {g} {b}\n"
+
+
+# The RP2040 drives the retro amber OLED readout strip (time / title / stream
+# info). The Pi streams display state with these commands; text is a single
+# line, no newlines (the terminator is the protocol frame).
+def cmd_disp_title(text: str) -> str:
+    return f"DISP TITLE {_one_line(text)}\n"
+
+
+def cmd_disp_time(position_ms: int, duration_ms: int) -> str:
+    return f"DISP TIME {int(position_ms)} {int(duration_ms)}\n"
+
+
+def cmd_disp_info(kbps: int, khz: int) -> str:
+    return f"DISP INFO {int(kbps)} {int(khz)}\n"
+
+
+def _one_line(text: str) -> str:
+    return " ".join(str(text).split()) or "-"
 
 
 class ControlsSource(Protocol):

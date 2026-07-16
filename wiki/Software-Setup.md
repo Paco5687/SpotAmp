@@ -10,10 +10,18 @@ python -m winamp_player
 ```
 Requires Python 3.11+. Opens the WinAmp-style UI with a demo playlist.
 
-## On the Raspberry Pi 4 B (outline — TODO expand)
-1. Flash Raspberry Pi OS (64-bit); enable I2C/SPI/serial.
-2. Install [go-librespot](https://github.com/devgianlu/go-librespot) (audio engine).
-3. Configure ALSA + I2S DAC; add the software EQ chain.
-4. `pip install -r pi/requirements.txt`; copy `config.example.toml` → `config.toml`.
-5. [Spotify Setup](Spotify-Setup) for the two one-time logins.
-6. Run fullscreen on boot (kiosk). Flash the [Firmware](Firmware) to the RP2040.
+## On the Raspberry Pi 4 B
+
+The full, tested procedure lives in
+**[docs/pi-bringup.md](https://github.com/Paco5687/WinAmpPlayer/blob/main/docs/pi-bringup.md)**:
+
+1. Flash Raspberry Pi OS (64-bit, Desktop); enable SSH.
+2. Install [go-librespot](https://github.com/devgianlu/go-librespot) (audio) as a
+   systemd service; one-time standalone OAuth ([Spotify Setup](Spotify-Setup)).
+3. HyperPixel 4.0 Square display: **disable I2C/SPI** (DPI uses all GPIO), add the
+   `vc4-kms-dpi-hyperpixel4sq` overlay; rotate at the compositor level.
+4. Clone the repo, `pip install -r pi/requirements.txt` in a venv, copy
+   `config.example.toml` → `config.toml` (`backend = "librespot"`).
+5. Kiosk autostart via the systemd user service in `deploy/` — boots straight
+   into the UI. Audio: 3.5 mm jack for bring-up, USB DAC for the real build.
+6. Later: flash the [Firmware](Firmware) to the RP2040 for physical controls.

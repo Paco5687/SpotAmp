@@ -14,6 +14,9 @@ The Python side is `pi/winamp_player/controls.py`; the firmware side is
 | `FADER <id> <pos>` | Drive motorized fader `id` to position `pos` (0–1023). Engages the PID loop toward that target. |
 | `FADER_RELEASE <id>` | Cut motor power on fader `id` so the user can move it freely. |
 | `LED <index> <r> <g> <b>` | Set indicator LED color (0–255 each). |
+| `DISP TITLE <text>` | Scrolling title line on the amber OLED readout (single line; sent on track change). |
+| `DISP TIME <pos_ms> <dur_ms>` | Elapsed/total time for the OLED (sent ~1/s). |
+| `DISP INFO <kbps> <khz>` | Stream info readout (bitrate / sample rate). |
 | `PING` | Liveness check; expects `PONG`. |
 
 ## Microcontroller → Pi (events)
@@ -43,7 +46,12 @@ ignored by the parser).
 | 9 | Seek (tracks song position) | ✅ |
 
 **Buttons** (`ButtonId`): 0 prev · 1 play · 2 pause · 3 stop · 4 next ·
-5 eject · 6 shuffle · 7 repeat · 8 eq-toggle.
+5 eject (spare) · 6 shuffle · 7 repeat · 8 eq-on/off · **9 view:now-playing ·
+10 view:playlists · 11 view:queue** (the dedicated view-switch buttons for the
+central screen) · 12 eq-preset (cycles presets; the motorized faders animate
+into each curve).
+
+**Pots** (`PotId`, via `EV POT`): 0 balance (L/R, non-motorized).
 
 ## Example exchange
 
