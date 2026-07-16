@@ -116,7 +116,7 @@ class ScreenUI:
         pygame.draw.rect(self.surface, skin.METAL_LO, r.as_tuple())
         pygame.draw.line(self.surface, skin.BEVEL_DARK, (0, r.h - 1), (self.W, r.h - 1))
         self._play_indicator(20, r.cy, state.status)
-        title = state.track.display if state.track.title != "—" else "WINAMP · PHYSICAL EDITION"
+        title = state.track.display if state.track.title != "—" else "SPOTAMP"
         self._scroll_text(title, Rect(38, 12, self.W - 130, 24), skin.TEXT, self.f_body)
         self._draw_battery(state, r)
 

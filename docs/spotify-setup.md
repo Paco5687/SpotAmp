@@ -37,7 +37,7 @@ steps), then configure it for standalone interactive login.
 the go-librespot README, which is the source of truth):
 
 ```yaml
-device_name: "Winamp Physical Edition"
+device_name: "SpotAmp"
 device_type: computer
 
 credentials:
@@ -73,7 +73,7 @@ This is the flow already built into the app:
 1. Create an app at https://developer.spotify.com/dashboard.
 2. Add redirect URI **exactly**: `http://127.0.0.1:8888/callback`
 3. Put the **Client ID** in `pi/config.toml` (`spotify_client_id`). No secret — PKCE.
-4. `python -m winamp_player.authorize` → approve once → `spotify_token.json` cached.
+4. `python -m spotamp.authorize` → approve once → `spotify_token.json` cached.
 
 See [../pi/README.md](../pi/README.md#connect-spotify-web-api--playlists--album-art).
 

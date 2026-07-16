@@ -1,4 +1,4 @@
-# WinAmp · Physical Edition
+# SpotAmp
 
 A handheld, book-sized Spotify player styled after classic WinAmp — color LCD
 touchscreen for the playlist, real physical buttons, pots, and **motorized
@@ -27,4 +27,4 @@ The core device works: a Pi 4 B that **boots straight into its own multi-view UI
 on a HyperPixel 4.0 Square touchscreen and plays Spotify **standalone** (no phone).
 In progress: physical controls (RP2040), motorized faders, EQ + spectrum, battery,
 enclosure. See the [project board](https://github.com/users/Paco5687/projects/4)
-and [repo README](https://github.com/Paco5687/WinAmpPlayer).
+and [repo README](https://github.com/Paco5687/SpotAmp).

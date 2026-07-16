@@ -58,7 +58,7 @@ Spotify ──▶ go-librespot ──▶ ALSA (software graphic EQ) ──▶ US
 - A **loopback/monitor tap** feeds a small FFT so the spectrum analyzer reflects
   the actual audio, not a simulation. (In mock mode it's simulated.)
 
-## The Pi app (`pi/winamp_player/`)
+## The Pi app (`pi/spotamp/`)
 
 | Module | Responsibility |
 |---|---|
@@ -111,7 +111,7 @@ The full, tested procedure is **[pi-bringup.md](pi-bringup.md)**. In short:
 2. HyperPixel 4.0 Square via the `vc4-kms-dpi-hyperpixel4sq` overlay; rotation
    done at the **compositor** level so touch follows the display.
 3. The UI as a systemd **user** service (kiosk): boots straight into the app,
-   fullscreen, cursor hidden (`deploy/winamp-kiosk.*`).
+   fullscreen, cursor hidden (`deploy/spotamp-kiosk.*`).
 4. *(Phase 4)* ALSA EQ between librespot and the USB DAC.
 5. *(Phase 5)* RP2040 flashed and enumerated at `/dev/ttyACM0`.
 

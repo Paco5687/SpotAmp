@@ -1,6 +1,6 @@
 """Config loading: defaults, toml overrides, derived values."""
 
-from winamp_player.config import Config
+from spotamp.config import Config
 
 
 def test_defaults_are_mock_and_square():

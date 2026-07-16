@@ -63,5 +63,5 @@ class Library:
 def make_library(web: SpotifyWeb | None) -> tuple[Library | None, str]:
     """Build a Library from a shared web client (or None if unauthorized)."""
     if web is None:
-        return None, "no Spotify token — run `python -m winamp_player.authorize`"
+        return None, "no Spotify token — run `python -m spotamp.authorize`"
     return Library(web), "ok"

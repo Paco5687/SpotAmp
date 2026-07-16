@@ -27,7 +27,7 @@ fps = 30
 # Create an app at https://developer.spotify.com/dashboard. Uses PKCE, so only
 # the client id is needed (no secret on the device). In the dashboard, add this
 # exact redirect URI:  http://127.0.0.1:8888/callback
-# Then run once:  python -m winamp_player.authorize
+# Then run once:  python -m spotamp.authorize
 spotify_client_id = ""
 spotify_redirect_port = 8888
 # spotify_token_path = ""   # defaults to pi/spotify_token.json

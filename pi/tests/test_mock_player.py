@@ -1,7 +1,7 @@
 """MockPlayer behavior — the simulation the UI is developed against."""
 
-from winamp_player.models import PlaybackStatus, RepeatMode, Track
-from winamp_player.spotify import MockPlayer
+from spotamp.models import PlaybackStatus, RepeatMode, Track
+from spotamp.spotify import MockPlayer
 
 
 def make_player():

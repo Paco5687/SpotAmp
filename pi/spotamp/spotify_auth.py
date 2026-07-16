@@ -5,7 +5,7 @@ local HTTP server on 127.0.0.1:<port>, catches Spotify's redirect, exchanges the
 code for tokens (PKCE), and caches a **refresh token**. After that the device
 refreshes access tokens forever, headless.
 
-Run the one-time flow with:  ``python -m winamp_player.authorize``
+Run the one-time flow with:  ``python -m spotamp.authorize``
 
 Spotify rules this satisfies (as of the Nov 2025 OAuth migration):
   * loopback redirect with an explicit IP (``127.0.0.1``, not ``localhost``)
@@ -83,7 +83,7 @@ class _CallbackHandler(BaseHTTPRequestHandler):
         self.end_headers()
         msg = ("Authorization failed: " + _CallbackHandler.error
                if _CallbackHandler.error else
-               "Winamp · Physical Edition is authorized. You can close this tab.")
+               "SpotAmp is authorized. You can close this tab.")
         self.wfile.write(f"<html><body style='font-family:sans-serif;background:#1c1e22;"
                          f"color:#2cff78;padding:3em'>{msg}</body></html>".encode())
 

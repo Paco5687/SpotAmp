@@ -1,4 +1,4 @@
-### WinAmp · Physical Edition
+### SpotAmp
 
 - [Home](Home)
 - [Bill of Materials](Bill-of-Materials)
@@ -9,4 +9,4 @@
 - [Firmware](Firmware)
 - [Troubleshooting](Troubleshooting)
 
-[Repo ↗](https://github.com/Paco5687/WinAmpPlayer)
+[Repo ↗](https://github.com/Paco5687/SpotAmp)

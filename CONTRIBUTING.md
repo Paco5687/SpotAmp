@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in **WinAmp · Physical Edition**! This is an open
+Thanks for your interest in **SpotAmp**! This is an open
 (MIT-licensed) hardware + software project meant to be reproducible by anyone.
 
 ## Ground rules
@@ -8,7 +8,7 @@ Thanks for your interest in **WinAmp · Physical Edition**! This is an open
 - **Never commit credentials.** No Spotify client secrets, tokens, or
   `credentials.json`. Local secrets live in gitignored files:
   - `pi/config.toml` — copy from [`pi/config.example.toml`](pi/config.example.toml)
-  - `pi/spotify_token.json` — created by `python -m winamp_player.authorize`
+  - `pi/spotify_token.json` — created by `python -m spotamp.authorize`
   - go-librespot `credentials.json` — lives on the Pi in `~/.config/go-librespot/`
   If you think you committed a secret, rotate it immediately (Spotify dashboard).
 - **Bring your own Spotify Premium** account and developer app to run/test.
@@ -27,7 +27,7 @@ Thanks for your interest in **WinAmp · Physical Edition**! This is an open
 ## Dev quickstart
 
 ```bash
-cd pi && pip install -r requirements.txt && python -m winamp_player   # mock UI, no hardware
+cd pi && pip install -r requirements.txt && python -m spotamp   # mock UI, no hardware
 ```
 
 ## Pull requests

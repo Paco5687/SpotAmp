@@ -44,7 +44,7 @@ degrades instead of hanging.
 ## Bring-up order (with the full firmware)
 
 1. Flash with **all `HAS_*` flags off except none needed** — `PING`→`PONG` over
-   USB proves the link (`LOG winamp-fw ready`).
+   USB proves the link (`LOG spotamp-fw ready`).
 2. Enable `HAS_MCP23017` → press buttons, watch `EV BTN`. Encoders are always
    on (direct GPIO) — turn them, watch `EV ENC`.
 3. Wire fader #1 (wiper → mux ch0, motor → PCA A ch0/1, touch → MPR121 e0);

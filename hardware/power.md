@@ -53,7 +53,7 @@ rated for Pi 4 peaks, charge management, and I2C monitoring** in one board — t
 hard, safety-critical parts done right.
 
 **Decision (v1): Geekworm X728.** Its MAX17040 fuel gauge (I2C `0x36`) is what
-`pi/winamp_player/power.py` (`X728Battery`) reads for the on-screen meter and
+`pi/spotamp/power.py` (`X728Battery`) reads for the on-screen meter and
 safe shutdown; it has documented shutdown scripts and AC-loss detection. Waveshare
 UPS HAT (B) remains a drop-in alternative — swap the reader class if you use it.
 For more runtime, feed a larger 18650 pack (4–6 cells) to the board's terminals.
@@ -111,7 +111,7 @@ The UPS HAT exposes battery voltage / state-of-charge over **I2C**. The Pi shoul
 3. On **low battery** (~5 %) or **AC-loss + threshold**, trigger a clean
    `shutdown` so the SD card isn't corrupted.
 
-Planned code: `pi/winamp_player/power.py` (battery monitor) + a battery widget in
+Planned code: `pi/spotamp/power.py` (battery monitor) + a battery widget in
 the UI. *Placeholder for now* — implement once the specific UPS board is chosen,
 since the I2C register map is board-specific.
 

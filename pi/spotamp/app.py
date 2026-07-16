@@ -41,7 +41,7 @@ class App:
     def __init__(self, cfg: Config) -> None:
         self.cfg = cfg
         pygame.init()
-        pygame.display.set_caption("WinAmp · Physical Edition")
+        pygame.display.set_caption("SpotAmp")
         flags = pygame.FULLSCREEN if cfg.fullscreen else 0
         self.surface = pygame.display.set_mode(cfg.window_size, flags)
         if cfg.fullscreen:

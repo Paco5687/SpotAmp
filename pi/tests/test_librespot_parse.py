@@ -5,8 +5,8 @@ live position lives at track.position (not top-level), and volume is scaled
 by volume_steps (0-100), not 0-65535.
 """
 
-from winamp_player.models import PlaybackStatus
-from winamp_player.spotify import LibrespotPlayer
+from spotamp.models import PlaybackStatus
+from spotamp.spotify import LibrespotPlayer
 
 STATUS = {
     "username": "user",
