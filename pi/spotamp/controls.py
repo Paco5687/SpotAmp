@@ -124,6 +124,14 @@ def cmd_disp_info(kbps: int, khz: int) -> str:
     return f"DISP INFO {int(kbps)} {int(khz)}\n"
 
 
+def cmd_disp_spec(bars: "list[int]") -> str:
+    """Spectrum bars for the OLED vis window: 14 levels, each 0-15 (one hex
+    nibble per bar). The firmware falls back to a placeholder animation when
+    these stop arriving, so it is safe to send only while playing."""
+    hexstr = "".join(f"{max(0, min(15, int(b))):X}" for b in bars[:14])
+    return f"DISP SPEC {hexstr}\n"
+
+
 def _one_line(text: str) -> str:
     return " ".join(str(text).split()) or "-"
 

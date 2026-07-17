@@ -36,8 +36,12 @@ speakers-to-be. Transport, EQ, volume, and seek live in *hardware* — including
 
 <img src="hardware/cad/front-panel.svg" alt="Front panel cut drawing" width="420"/>
 
-Envelope **175 × 280 × 32 mm** (6.9″ × 11″), FDM prototype → CNC **anodized
-aluminum** final, with aluminum knobs and a fold-out kickstand.
+Envelope **127 × 255 × 30 mm** (5″ × 10″), FDM prototype → CNC **anodized
+aluminum** final, with aluminum knobs and a fold-out kickstand. The display
+cluster is one 256×64 amber OLED behind **four sculpted apertures** —
+registered to the display's real active area, simulated before cutting:
+
+<img src="hardware/cad/oled-through-panel.png" alt="OLED interface through the panel apertures" width="640"/>
 
 ## How it works
 

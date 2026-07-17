@@ -31,8 +31,8 @@ import ezdxf
 # Parameters — all mm. Sources noted. VERIFY marked items before cutting metal.
 # =========================================================================== #
 
-PANEL_W = 175.0
-PANEL_H = 280.0
+PANEL_W = 127.0
+PANEL_H = 255.0
 WALL = 3.0                     # enclosure wall thickness (interior = panel - 2*WALL)
 CORNER_R = 4.0                 # panel corner radius (machinable)
 
@@ -140,74 +140,99 @@ def grille(x0, y0, x1, y1):
 # Layout
 # =========================================================================== #
 
-# ---- top module ------------------------------------------------------------ #
-# OLED window (module REF behind)
-oled_cx, oled_cy = 10 + OLED_WIN_W / 2, 7.5 + OLED_WIN_H / 2    # (49, 17.75)
-rect("CUTOUTS", 10, 7.5, OLED_WIN_W, OLED_WIN_H)
-rect("REF", oled_cx - OLED_MOD_W / 2, oled_cy - OLED_MOD_H / 2, OLED_MOD_W, OLED_MOD_H)
-text("ENGRAVE", 10, 6.0, "OLED 256x64", 2.0)
 
-# LED VU slit, top right (right of the OLED module, above the balance pot)
-rect("CUTOUTS", 95.0, 8.0, LED_SLIT_W, LED_SLIT_H)
+# Slim NON-motorized slide pots — generic 60mm body/45mm travel (VERIFY)
+SLIM_SLOT_LEN, SLIM_SLOT_W = 47.0, 2.5
+SLIM_BODY_W, SLIM_BODY_L = 9.0, 60.0
+SLIM_M_SPAN, SLIM_M_DIA = 54.0, 2.4
+SLIM_PITCH = 10.4
+MINI_SLOT = 22.0                         # balance: 20mm-travel mini pot (VERIFY)
 
-# balance slide pot, under the LED slit
-bal_cx, bal_cy = 121.0, 22.0
-rect("CUTOUTS", bal_cx - BAL_SLOT_LEN / 2, bal_cy - BAL_SLOT_W / 2,
-     BAL_SLOT_LEN, BAL_SLOT_W)
-circle("HOLES", bal_cx - BAL_M_SPAN / 2, bal_cy, BAL_M_DIA)
-circle("HOLES", bal_cx + BAL_M_SPAN / 2, bal_cy, BAL_M_DIA)
-text("ENGRAVE", bal_cx - 5, bal_cy + 6.5, "L  BAL  R", 2.0)
+def vpot(cx_, cy_, label):
+    rect("CUTOUTS", cx_ - SLIM_SLOT_W / 2, cy_ - SLIM_SLOT_LEN / 2, SLIM_SLOT_W, SLIM_SLOT_LEN)
+    circle("HOLES", cx_, cy_ - SLIM_M_SPAN / 2, SLIM_M_DIA)
+    circle("HOLES", cx_, cy_ + SLIM_M_SPAN / 2, SLIM_M_DIA)
+    rect("REF", cx_ - SLIM_BODY_W / 2, cy_ - SLIM_BODY_L / 2, SLIM_BODY_W, SLIM_BODY_L)
+    text("ENGRAVE", cx_ - 2.6, cy_ + SLIM_SLOT_LEN / 2 + 5.5, label, 1.8)
 
-# encoders, below balance
-circle("CUTOUTS", 108.0, 36.0, ENC_DIA)
-circle("CUTOUTS", 130.0, 36.0, ENC_DIA)
-text("ENGRAVE", 103.0, 45.0, "SCROLL", 2.0)
-text("ENGRAVE", 126.0, 45.0, "MENU", 2.0)
+def rkey(x, y, w, h, label, tsize=1.8):
+    rect("CUTOUTS", x, y, w, h)
+    text("ENGRAVE", x + 1.5, y + h + 4.0, label, tsize)
 
-# right aux button column
-button(155.0, 10.0, "SHUF")
-button(155.0, 27.0, "LOOP")
-button(155.0, 44.0, "AUX")
+# ---- top module: the WinAmp main-window stack (Yanko-faithful) -------------- #
+# One 256x64 OLED (NHD-3.12-25664UCY2) behind FOUR apertures. Geometry derived
+# from the REAL mechanical drawing (datasheets/nhd-3.12-25664-oled-module.pdf):
+# PCB 89.2 x 44.0; active area 76.78 x 19.18 offset (+6.21, +12.20) from PCB
+# top-left. PCB sits at (3.5, 3.5) -> AA spans (9.71..86.49, 15.70..34.88).
+# Every aperture keeps >=0.7 mm inside the AA. Pixel map in firmware config.h.
+OLED_PCB_X, OLED_PCB_Y = 3.5, 3.5
+rect("REF", OLED_PCB_X, OLED_PCB_Y, 89.2, 44.0)        # OLED PCB behind
+rect("CUTOUTS", 10.5, 16.5, 26.0, 17.5)                # time + spectrum window
+rect("CUTOUTS", 40.0, 16.5, 44.5, 7.5)                 # scrolling title strip
+rect("CUTOUTS", 40.0, 26.0, 13.0, 6.0)                 # bitrate pill
+rect("CUTOUTS", 56.0, 26.0, 13.0, 6.0)                 # sample-rate pill
+text("ENGRAVE", 43.0, 36.5, "KBPS", 1.6)
+text("ENGRAVE", 59.0, 36.5, "KHZ", 1.6)
 
-# transport row (5)
-for i, lab in enumerate(["PREV", "PLAY", "PAUSE", "STOP", "NEXT"]):
-    button(14.0 + i * 17.5, 39.5, lab)
+# view toggles (WinAmp EQ/PL style: small round buttons + engraved labels)
+for i, lab in enumerate(["NOW", "PL", "QUE"]):
+    circle("CUTOUTS", 98.0 + i * 11.0, 20.0, 6.0)
+    text("ENGRAVE", 95.5 + i * 11.0, 29.5, lab, 1.8)
 
-# ---- volume row -------------------------------------------------------------- #
-hfader(60.0, 56.0, "VOLUME")
+# volume / balance row (engraved - + / L R) + bolt badge
+rect("CUTOUTS", 10.0, 51.75, SLIM_SLOT_LEN, SLIM_SLOT_W)
+circle("HOLES", 33.5 - SLIM_M_SPAN / 2, 53.0, SLIM_M_DIA)
+circle("HOLES", 33.5 + SLIM_M_SPAN / 2, 53.0, SLIM_M_DIA)
+rect("REF", 33.5 - SLIM_BODY_L / 2, 48.5, SLIM_BODY_L, SLIM_BODY_W)
+text("ENGRAVE", 5.5, 51.5, "-", 2.5)
+text("ENGRAVE", 59.5, 51.5, "+", 2.5)
+rect("CUTOUTS", 72.0, 51.75, MINI_SLOT, SLIM_SLOT_W)
+circle("HOLES", 68.5, 53.0, SLIM_M_DIA)
+circle("HOLES", 97.5, 53.0, SLIM_M_DIA)
+text("ENGRAVE", 66.0, 51.5, "L", 2.0)
+text("ENGRAVE", 100.0, 51.5, "R", 2.0)
+text("ENGRAVE", 106.0, 51.0, "SpotAmp", 2.8)             # brand engrave (no bolt)
 
-# ---- screen ------------------------------------------------------------------ #
-scr_cy = Y_SCREEN + 4 + SCREEN_WIN / 2          # window y 70..143
-rect("CUTOUTS", CX - SCREEN_WIN / 2, Y_SCREEN + 4, SCREEN_WIN, SCREEN_WIN)
-rect("REF", CX - SCREEN_BOARD_W / 2, scr_cy - SCREEN_BOARD_H / 2,
+# SEEK: custom belt-drive mechanism — slim manual long-travel pot + remote
+# motor/pulley loop (see enclosure.md). Slot spans ~85mm travel (VERIFY pot).
+rect("CUTOUTS", 20.0, 64.75, 87.0, 2.5)
+circle("HOLES", 14.0, 66.0, 2.9)                        # mechanism mounts (VERIFY)
+circle("HOLES", 113.0, 66.0, 2.9)
+rect("REF", 3.5, 59.0, 120.0, 14.0)                     # mechanism envelope behind
+text("ENGRAVE", 10.0, 61.0, "SEEK", 1.8)
+
+# transport: rectangular keycaps + SHUFFLE + LOOP
+for i, lab in enumerate(["|<", ">", "||", "[]", ">|"]):
+    rkey(9.0 + i * 15.0, 77.0, 13.0, 9.0, lab, 2.0)
+rkey(85.0, 77.0, 20.0, 9.0, "SHUFFLE")
+rkey(107.5, 77.0, 15.0, 9.0, "LOOP")
+
+# ---- screen module: the centerpiece ------------------------------------------ #
+SCR_CX = 63.5
+scr_top = 94.0
+rect("CUTOUTS", SCR_CX - SCREEN_WIN / 2, scr_top, SCREEN_WIN, SCREEN_WIN)
+rect("ENGRAVE", SCR_CX - SCREEN_WIN / 2 - 3, scr_top - 3, SCREEN_WIN + 6, SCREEN_WIN + 6)
+scr_cy = scr_top + SCREEN_WIN / 2
+rect("REF", SCR_CX - SCREEN_BOARD_W / 2, scr_cy - SCREEN_BOARD_H / 2,
      SCREEN_BOARD_W, SCREEN_BOARD_H)
-text("ENGRAVE", CX - 22, Y_SCREEN + 2.5, "HYPERPIXEL 4.0 SQUARE", 2.0)
 
-# view buttons right of screen; EQ toggles left of screen
-button(155.0, 85.0, "NOW", 11)
-button(155.0, 106.5, "LIST", 11)
-button(155.0, 128.0, "QUEUE", 11)
-button(20.0, 85.0, "EQ", 11)
-button(20.0, 106.5, "PRESET", 11)
-
-# speaker grilles flank the seek row (fader body spans x 34..141 there)
-grille(6.0, 145.0, 30.0, 161.0)
-grille(PANEL_W - 30.0, 145.0, PANEL_W - 6.0, 161.0)
-
-# ---- seek row ----------------------------------------------------------------- #
-hfader(CX, 153.0, "SEEK")
-
-# ---- EQ bank ------------------------------------------------------------------- #
-eq_cy = Y_EQ + 3.75 + FADER_BODY_LEN / 2        # body y 166.75..273.25
-labels = ["PRE", "60", "150", "400", "1K", "2K4", "6K", "15K"]
-xs = [16.0] + [44.0 + i * FADER_PITCH for i in range(7)]
+# ---- EQ module: WinAmp EQ window, physical ------------------------------------ #
+rkey(10.0, 174.0, 16.0, 8.0, "ON")
+rkey(29.0, 174.0, 16.0, 8.0, "AUTO")
+rkey(98.0, 174.0, 24.0, 8.0, "PRESET")
+text("ENGRAVE", 3.5, 190.0, "+12", 1.6)
+text("ENGRAVE", 5.0, 213.0, "0", 1.6)
+text("ENGRAVE", 3.5, 236.0, "-12", 1.6)
+eq_cy = 214.5
+labels = ["PRE", "60", "170", "310", "600", "1K", "3K", "6K", "12K", "14K", "16K"]
+xs = [14.5 + i * SLIM_PITCH for i in range(11)]
 for x, lab in zip(xs, labels):
-    vfader(x, eq_cy, lab)
+    vpot(x, eq_cy, lab)
 
 # ---- outline + dims -------------------------------------------------------------- #
-text("DIM", 2, PANEL_H + 4, f"PANEL {PANEL_W:.0f} x {PANEL_H:.0f} mm — units: mm", 3.5)
+text("DIM", 2, PANEL_H + 4, f"SPOTAMP FINAL — {PANEL_W:.0f} x {PANEL_H:.0f} mm — OLED apertures registered to NHD AA (+6.21,+12.20), PRE+10 slim pots, belt-drive seek", 2.8)
 text("DIM", 2, PANEL_H + 9,
-     "EQ pitch 19.0 · fader slots 62x3 / M3 span 80 · screen win 73x73 · VERIFY-marked dims vs datasheets before cutting", 2.5)
+     "EQ pitch 10.4 · slim slots 47x2.5 / M span 54 (VERIFY) · seek slot 87x2.5 · screen win 73x73 · VERIFY-marked dims before cutting", 2.5)
 
 # =========================================================================== #
 # Sanity checks — fail loudly rather than emit a bad drawing
@@ -342,5 +367,5 @@ def emit_svg(path="front-panel.svg"):
 
 if __name__ == "__main__":
     check()
-    emit_dxf()
-    emit_svg()
+    emit_dxf("front-panel.dxf")
+    emit_svg("front-panel.svg")

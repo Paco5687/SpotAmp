@@ -130,15 +130,24 @@ portable between rooms, not pocket-portable. Design decisions:
 
 One 256×64 OLED sits behind **four sculpted apertures** (time+spectrum window,
 title strip, two kbps/kHz pills) — the panel mask turns one display into four.
-Implementation notes:
-- The apertures must land inside the OLED's **76.78 × 19.18 mm active area**;
-  positions in `cad/generate_panel.py` are derived from it. Mask alignment
-  tolerance ±0.5 mm — locate the OLED with pins/bosses, not adhesive guesswork.
+Implementation notes (registered against the real NHD-3.12-25664UCY2
+mechanical drawing, 2026-07-17):
+- **Module truth**: PCB **89.2 × 44.0 mm** (not just the bezel!), active area
+  **76.78 × 19.18 mm** offset **(+6.21, +12.20)** from the PCB corner. The
+  44 mm-tall PCB is why the display cluster starts ~16 mm from the panel top
+  and the volume row sits below y=48 — do not "tidy" those positions.
+- PCB reference position on the panel: **(3.5, 3.5)** → AA spans
+  (9.71..86.49, 15.70..34.88). Every aperture in `cad/generate_panel.py` keeps
+  ≥0.7 mm inside the AA. Mask alignment tolerance ±0.5 mm — locate the OLED on
+  its **4× Ø2.5 mounting holes** (they're in the mechanical drawing), never
+  adhesive guesswork.
 - Put a **smoked/amber acrylic layer** (~1 mm) behind the apertures so off
   pixels vanish into black and the windows read as separate lit instruments.
-- Firmware renders each element at fixed pixel regions matching the mask (the
-  `DISP` data already carries everything; the region map is a table in
-  `firmware/src/config.h` when formalized).
+- Firmware renders each element inside fixed pixel regions
+  (`REG_VIS/TITLE/KBPS/KHZ` in `firmware/src/config.h`, clipped per-region,
+  content held 2 px inside every edge to absorb the mask tolerance). Preview
+  the result anytime: `python cad/render_oled_preview.py` →
+  [oled-through-panel.png](cad/oled-through-panel.png).
 
 ## The seek mechanism (owner's design, 2026-07-17): custom belt drive
 

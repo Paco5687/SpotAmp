@@ -23,6 +23,7 @@ from .controls import (
     ControlEventType,
     FaderId,
     FADER_MAX,
+    cmd_disp_info,
     cmd_disp_time,
     cmd_disp_title,
     cmd_fader_target,
@@ -261,6 +262,10 @@ class App:
         title = st.track.display
         if title != self._disp_title_sent:
             self.controls.send(cmd_disp_title(title))
+            # Stream info for the panel's KBPS/KHZ pills. librespot doesn't
+            # report the negotiated bitrate, so mirror our go-librespot config
+            # (Premium "very high" = 320 kbps Vorbis, 44.1 kHz).
+            self.controls.send(cmd_disp_info(320, 44))
             self._disp_title_sent = title
         secs = st.position_ms // 1000
         if secs != self._disp_secs_sent:   # at most ~1 update/second
