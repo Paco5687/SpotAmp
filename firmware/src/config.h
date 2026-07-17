@@ -49,6 +49,24 @@ static const uint8_t BTN_ENC2_PUSH  = 14;
 static const uint8_t MUX_CH_BALANCE = 10;   // wipers 0-9 = faders, 10 = balance pot
 static const uint8_t NUM_PIXELS     = 8;
 
+// ---- OLED aperture regions ---------------------------------------------------- //
+// The 256x64 SSD1322 (NHD-3.12-25664UCY2) sits behind FOUR sculpted apertures in
+// the front panel. Each UI element must render inside its aperture's pixel rect.
+//
+// Derivation (hardware/cad/generate_panel.py + datasheets/nhd-3.12-25664 PDF):
+//   PCB at panel (3.5, 3.5); active area offset (+6.21, +12.20) from PCB corner
+//   -> AA origin at panel (9.71, 15.70); scale 256/76.78 = 3.334 px/mm.
+//   aperture_px = (aperture_mm - AA_origin) * 3.334, rounded inward.
+// Mask alignment tolerance is +/-0.5 mm (~1.7 px): keep content REGION_PAD px
+// inside every edge.
+struct OledRegion { uint8_t x, y, w, h; };
+static const OledRegion REG_VIS   = {  3,  3,  86, 58 }; // time + spectrum window
+static const OledRegion REG_TITLE = {101,  3, 148, 24 }; // scrolling title strip
+static const OledRegion REG_KBPS  = {101, 35,  43, 19 }; // bitrate pill
+static const OledRegion REG_KHZ   = {155, 35,  42, 19 }; // sample-rate pill
+static const uint8_t REGION_PAD   = 2;   // px kept clear inside aperture edges
+static const uint8_t SPEC_BARS    = 14;  // spectrum bars in the vis window
+
 // ---- tuning ----------------------------------------------------------------- //
 static const uint16_t FADER_MAX     = 1023; // protocol position range
 static const uint16_t PID_HZ        = 250;  // control loop rate

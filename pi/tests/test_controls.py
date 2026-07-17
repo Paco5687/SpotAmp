@@ -56,6 +56,15 @@ def test_disp_commands_are_single_line():
     assert cmd_disp_info(320, 44) == "DISP INFO 320 44\n"
 
 
+def test_disp_spec_packs_hex_nibbles():
+    from spotamp.controls import cmd_disp_spec
+
+    assert cmd_disp_spec([0, 4, 8, 12, 15]) == "DISP SPEC 048CF\n"
+    # clamped to 0..15, truncated to the 14 bars the vis window holds
+    assert cmd_disp_spec([-3, 99]) == "DISP SPEC 0F\n"
+    assert cmd_disp_spec(list(range(16))) == "DISP SPEC 0123456789ABCD\n"
+
+
 def test_button_ids_cover_the_panel():
     """Panel buttons 0..12 plus the two encoder pushes (13/14)."""
     from spotamp.controls import ButtonId, PotId

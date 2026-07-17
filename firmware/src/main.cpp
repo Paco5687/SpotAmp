@@ -1,7 +1,7 @@
 // SpotAmp — RP2040 controls firmware.
 //
 // Implements the full serial protocol (docs/serial-protocol.md) over USB CDC:
-//   in : FADER, FADER_RELEASE, LED, DISP TITLE/TIME/INFO, PING
+//   in : FADER, FADER_RELEASE, LED, DISP TITLE/TIME/INFO/SPEC, PING
 //   out: EV BTN/FADER/TOUCH/ENC/POT/BAT/CHG/JACK, PONG, LOG
 //
 // I/O architecture (hardware/wiring.md): motors via 2x PCA9685 -> DRV8833,
@@ -89,6 +89,8 @@ uint32_t dispPosMs = 0, dispDurMs = 0;
 uint16_t dispKbps = 0, dispKhz = 0;
 uint32_t dispPosStamp = 0;       // millis() when dispPosMs was set
 int16_t  marqueeX = 0;
+uint8_t  specBars[SPEC_BARS] = {0};   // 0-15 per bar, from DISP SPEC
+uint32_t specStamp = 0;               // millis() of last DISP SPEC (0 = never)
 
 // --------------------------------------------------------------------------- //
 // serial protocol
@@ -117,6 +119,16 @@ static void handleDisp(char* args) {
   } else if (!strcmp(what, "INFO")) {
     dispKbps = atoi(strtok(nullptr, " ") ?: "0");
     dispKhz  = atoi(strtok(nullptr, " ") ?: "0");
+  } else if (!strcmp(what, "SPEC")) {
+    // 14 hex nibbles, one per bar (0-15), e.g. "DISP SPEC 048CFFC840123AB"
+    const char* hex = strtok(nullptr, " ");
+    if (hex) {
+      for (uint8_t i = 0; i < SPEC_BARS && hex[i]; i++) {
+        char c = hex[i];
+        specBars[i] = (c <= '9') ? c - '0' : (c | 0x20) - 'a' + 10;
+      }
+      specStamp = millis();
+    }
   }
 }
 
@@ -316,38 +328,79 @@ static void taskBattery() {           // every 5 s
 #endif
 }
 
+// The panel mask turns the one 256x64 OLED into four instruments. Everything
+// below renders INSIDE the REG_* aperture rects from config.h; pixels outside
+// them land behind aluminum and are never visible. Each region is clipped so
+// content can't bleed into a neighboring aperture.
+#if HAS_OLED
+static void clipTo(const OledRegion& r) {
+  oled.setClipWindow(r.x, r.y, r.x + r.w, r.y + r.h);
+}
+
+static void drawCentered(const OledRegion& r, const char* s, int8_t dy = 0) {
+  int16_t w = oled.getStrWidth(s);
+  int16_t a = oled.getAscent();
+  oled.drawStr(r.x + (r.w - w) / 2, r.y + (r.h + a) / 2 + dy, s);
+}
+#endif
+
 static void taskDisplay() {           // ~10 Hz
 #if HAS_OLED
   if (!haveOled) return;
   // live position estimate between DISP TIME updates
   uint32_t pos = dispPosMs;
-  if (dispDurMs > 0 && dispPosStamp) pos += millis() - dispPosStamp;
+  bool playing = dispDurMs > 0 && dispPosStamp;
+  if (playing) pos += millis() - dispPosStamp;
   if (dispDurMs > 0 && pos > dispDurMs) pos = dispDurMs;
 
+  oled.clearBuffer();
+
+  // -- vis window: big elapsed time over a 14-bar spectrum ------------------- //
+  clipTo(REG_VIS);
   char timeStr[12];
   snprintf(timeStr, sizeof(timeStr), "%lu:%02lu",
            (unsigned long)(pos / 60000), (unsigned long)((pos / 1000) % 60));
+  oled.setFont(u8g2_font_logisoso22_tn);
+  oled.drawStr(REG_VIS.x + REGION_PAD, REG_VIS.y + REGION_PAD + 22, timeStr);
 
-  oled.clearBuffer();
-  oled.setFont(u8g2_font_logisoso28_tn);          // big elapsed time
-  oled.drawStr(0, 32, timeStr);
+  bool specLive = specStamp && (millis() - specStamp < 2000);
+  const uint8_t barW = 4, gap = 2, specH = 26;
+  const uint8_t sx = REG_VIS.x + REGION_PAD;
+  const uint8_t sy = REG_VIS.y + REG_VIS.h - REGION_PAD;   // bar baseline
+  for (uint8_t i = 0; i < SPEC_BARS; i++) {
+    uint8_t v = specBars[i];
+    if (!specLive)          // placeholder sway until the Pi streams real FFT
+      v = playing ? (uint8_t)(3 + ((pos / 90 + i * 5) % 11)) : 1;
+    uint8_t h = 1 + (v * (specH - 1)) / 15;
+    oled.drawBox(sx + i * (barW + gap), sy - h, barW, h);
+  }
 
-  oled.setFont(u8g2_font_7x13B_tr);               // scrolling title
+  // -- title strip: marquee, clipped to its aperture -------------------------- //
+  clipTo(REG_TITLE);
+  oled.setFont(u8g2_font_7x13B_tr);
   int16_t tw = oled.getStrWidth(dispTitle);
-  if (tw <= 256) {
-    oled.drawStr(0, 60, dispTitle);
+  int16_t ty = REG_TITLE.y + (REG_TITLE.h + oled.getAscent()) / 2;
+  if (tw <= REG_TITLE.w - 2 * REGION_PAD) {
+    oled.drawStr(REG_TITLE.x + REGION_PAD, ty, dispTitle);
+    marqueeX = 0;
   } else {
     marqueeX -= 2;
-    if (marqueeX < -(tw + 40)) marqueeX = 0;
-    oled.drawStr(marqueeX, 60, dispTitle);
-    oled.drawStr(marqueeX + tw + 40, 60, dispTitle);
+    if (marqueeX < -(tw + 30)) marqueeX = 0;
+    oled.drawStr(REG_TITLE.x + REGION_PAD + marqueeX, ty, dispTitle);
+    oled.drawStr(REG_TITLE.x + REGION_PAD + marqueeX + tw + 30, ty, dispTitle);
   }
-  if (dispKbps) {                                 // stream info, top right
-    char info[24];
-    snprintf(info, sizeof(info), "%uk %ukHz", dispKbps, dispKhz);
-    oled.setFont(u8g2_font_6x10_tr);
-    oled.drawStr(256 - oled.getStrWidth(info), 10, info);
-  }
+
+  // -- info pills: numbers only (KBPS / KHZ labels are engraved in aluminum) -- //
+  char num[8];
+  oled.setFont(u8g2_font_7x13B_tr);
+  clipTo(REG_KBPS);
+  snprintf(num, sizeof(num), "%u", dispKbps);
+  drawCentered(REG_KBPS, dispKbps ? num : "---");
+  clipTo(REG_KHZ);
+  snprintf(num, sizeof(num), "%u", dispKhz);
+  drawCentered(REG_KHZ, dispKhz ? num : "--");
+
+  oled.setMaxClipWindow();
   oled.sendBuffer();
 #endif
 }

@@ -17,6 +17,7 @@ The Python side is `pi/spotamp/controls.py`; the firmware side is
 | `DISP TITLE <text>` | Scrolling title line on the amber OLED readout (single line; sent on track change). |
 | `DISP TIME <pos_ms> <dur_ms>` | Elapsed/total time for the OLED (sent ~1/s). |
 | `DISP INFO <kbps> <khz>` | Stream info readout (bitrate / sample rate). |
+| `DISP SPEC <hex>` | Spectrum for the OLED vis window: 14 hex nibbles, one 0–15 level per bar (e.g. `DISP SPEC 048CFFC840123A`). Optional — the firmware animates a placeholder while playing if these stop arriving for 2 s. |
 | `PING` | Liveness check; expects `PONG`. |
 
 ## Microcontroller → Pi (events)
