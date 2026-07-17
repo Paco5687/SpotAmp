@@ -1,5 +1,12 @@
 # Layout concepts (exploration — not the authoritative drawing)
 
+**concept-d — the owner's sketch (220 × 280 mm)**: OLED top-left, **view-key
+stack top-right**, 6-button transport row (+SHUF), full-width volume, function
+row (LOOP/EQ/PRESET keys + encoders + balance), **screen left**, speaker grille
+field + 2×2 pot cluster right, seek right-side (kept — the signature fader; the
+sketch omitted it), and the **full 10-band + preamp EQ** across the bottom.
+Current front-runner pending 1:1 paper test.
+
 **concept-c — "the in-between" (220 × 280 mm)**: the vibe-keeper. Screen stays
 **centered** (classic stacked-module composition), full **10-band EQ + preamp**,
 and **symmetric stereo grille fields** flanking the screen (L/R where stereo
