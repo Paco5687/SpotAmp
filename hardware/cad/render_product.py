@@ -11,7 +11,7 @@ import pygame
 pygame.init()
 
 S = 4                      # px per mm
-PW, PH = 127 * S, 300 * S  # panel
+PW, PH = 127 * S, 252 * S  # panel
 CW, CH = PW + 220, PH + 260
 OX, OY = 110, 110          # panel origin on canvas
 
@@ -112,7 +112,7 @@ for i, g in enumerate(GLYPHS):
         col = int(30 + 34 * (1 - t))
         pygame.draw.circle(canvas, (col, col + 2, col + 5), (c[0] - 3, c[1] - 3), r_)
     pygame.draw.circle(canvas, (120, 124, 132), c, 27, 2)
-    s = F_ENG_S.render(g, True, (44, 255, 120))
+    s = F_ENG_S.render(g, True, (255, 176, 56))
     canvas.blit(s, (c[0] - s.get_width() // 2, c[1] - s.get_height() // 2))
 
 # ---------- fader helper --------------------------------------------------------- #
@@ -127,6 +127,26 @@ def alu_cap(cx, cy, w, h):
     pygame.draw.rect(canvas, (30, 30, 34), cap, 2, border_radius=4)
     pygame.draw.line(canvas, (255, 120, 40), (cap.x + 4, cap.centery), (cap.right - 4, cap.centery), 3)
 
+
+def orange_cap(cx, cy, w, h):
+    cap = pygame.Rect(0, 0, w, h)
+    cap.center = (cx, cy)
+    rr(canvas, (8, 9, 10), cap.inflate(6, 6), 5)
+    for i in range(cap.h):
+        t = i / cap.h
+        c = (int(255 - 90 * t), int(120 - 55 * t), int(48 - 26 * t))
+        pygame.draw.line(canvas, c, (cap.x, cap.y + i), (cap.right, cap.y + i))
+    pygame.draw.rect(canvas, (60, 26, 10), cap, 2, border_radius=4)
+    pygame.draw.line(canvas, (30, 12, 5), (cap.x + 3, cap.centery), (cap.right - 3, cap.centery), 2)
+
+def small_hpot(cx_mm, cy_mm, pos, label):
+    slot = pygame.Rect(0, 0, int(47 * S), int(2.5 * S))
+    slot.center = (OX + int(cx_mm * S), OY + int(cy_mm * S))
+    rr(canvas, (8, 9, 11), slot.inflate(6, 6), 5)
+    rr(canvas, (2, 2, 3), slot, 4)
+    orange_cap(slot.x + int(slot.w * pos), slot.centery, 22, 44)
+    engrave(label, slot.centerx, slot.bottom + 10, F_ENG_S)
+
 def hslot(x0, x1, cy, pos, label, label_cx):
     slot = pygame.Rect(mm(x0, cy - 1.5), ((x1 - x0) * S, 3 * S))
     rr(canvas, (8, 9, 11), slot.inflate(6, 6), 6)
@@ -135,7 +155,8 @@ def hslot(x0, x1, cy, pos, label, label_cx):
     alu_cap(cx, slot.centery, 30, 46)
     engrave(label, OX + int(label_cx * S), slot.bottom + 12, F_ENG_S)
 
-hslot(29, 91, 52, 0.45, "VOLUME", 60)
+small_hpot(36, 54, 0.62, "VOLUME")
+small_hpot(94, 54, 0.5, "L · BAL · R")
 
 # ---------- view keys ------------------------------------------------------------- #
 for i, lab in enumerate(["NOW PLAYING", "PLAYLISTS", "QUEUE"]):
@@ -164,18 +185,19 @@ engrave("S P O T A M P", win.centerx, win.bottom + 26, F_ENG_S, (110, 114, 122))
 # ---------- seek -------------------------------------------------------------------- #
 hslot(32.5, 94.5, 172, 0.17, "SEEK", 63.5)
 
-# ---------- EQ bank ------------------------------------------------------------------ #
-levels = [0.55, 0.42, 0.65, 0.38, 0.5]
-for i, (lab, lv) in enumerate(zip(["60", "400", "2K4", "15K", "PRE"], levels)):
-    cx_mm = 17.5 + i * 23
-    slot = pygame.Rect(0, 0, 3 * S, 62 * S)
-    slot.center = (OX + int(cx_mm * S), OY + int(243 * S))
-    rr(canvas, (8, 9, 11), slot.inflate(6, 6), 6)
+# ---------- EQ bank: PRE + 10 classic bands, slim pots (Yanko) --------------------- #
+levels = [0.62, 0.45, 0.5, 0.58, 0.63, 0.66, 0.62, 0.55, 0.5, 0.47, 0.44]
+bands = ["PRE", "60", "170", "310", "600", "1K", "3K", "6K", "12K", "14K", "16K"]
+for i, (lab, lv) in enumerate(zip(bands, levels)):
+    cx_mm = 9.5 + i * 10.8
+    slot = pygame.Rect(0, 0, int(2.5 * S), int(47 * S))
+    slot.center = (OX + int(cx_mm * S), OY + int(213.5 * S))
+    rr(canvas, (8, 9, 11), slot.inflate(6, 6), 5)
     rr(canvas, (2, 2, 3), slot, 4)
     cy = slot.y + int(slot.h * (1 - lv))
-    alu_cap(slot.centerx, cy, 62, 30)
-    engrave(lab, slot.centerx, OY + int(203 * S), F_ENG_S,
-            (255, 176, 56) if lab == "PRE" else (148, 152, 160))
+    orange_cap(slot.centerx, cy, 34, 17)
+    engrave(lab, slot.centerx, slot.bottom + 8, F_ENG_S,
+            (255, 176, 56) if lab == "PRE" else (140, 144, 152))
 
 pygame.image.save(canvas, r"C:\Users\VNET\AppData\Local\Temp\claude\C--Users-VNET-Documents-repos-winamp-player\ef0351fc-2012-48d9-b4b6-d26a47a866f1\scratchpad\product_render.png")
 print("saved")
