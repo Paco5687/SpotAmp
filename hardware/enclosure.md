@@ -167,6 +167,22 @@ internally anyway):
   part printable now and machinable later, and the seek slot finally matches
   the concept's proportions.
 
+### Why output-side sensing (and not a servo indicator)
+
+Considered and rejected (2026-07-17): a servo-driven progress pointer ("the
+motor knows the position"). Three reasons the pot-on-the-knob topology wins:
+1. **The pot measures the actual knob** — belt slip is cosmetic and
+   self-correcting (PID drives until the *output* arrives). A servo knows only
+   its motor-side pot; a loose linkage lies with no sensor to catch it.
+2. **Touch-gating means motor motion can never seek the song** — position
+   events only fire while the MPR121 senses a grab. The song clock lives in
+   go-librespot; the fader follows it, not vice-versa.
+3. **Servos aren't back-drivable** — grab-to-scrub (the whole point) dies.
+
+**De-risk path**: the panel is identical with or without the motor — if the
+slip-clutch prototype disappoints, v1 ships seek as a manual-scrub fader and
+the belt drive lands in v1.1 with zero panel changes.
+
 ## Knobs & finish
 
 - **Final build**: aluminum fader caps (T-bar or rectangular, for the ALPS 9-T
