@@ -39,17 +39,25 @@ Datasheets for everything here: run [`datasheets/fetch.sh`](datasheets/) and see
 > Adafruit doesn't stock: motorized faders, the SSD1322 OLED, the UPS, or bare
 > 18650 cells — those come from the vendors below.
 
-## 🛒 DigiKey (or Mouser) — the faders
+## 🛒 The seek mechanism (custom belt drive — see enclosure.md)
 
-| Part | SKU | Qty | ~$ ea | ~$ |
-|---|---|---|---|---|
-| ALPS **RS60N11M9A0F** — 60 mm-travel motorized fader, 10 kΩ, touch-sense lever | [DigiKey](https://www.digikey.com/en/products/detail/alps-alpine/RS60N11M9A0F/19529099) | 10 | 20–25 | 200–250 |
+| Part | Source | Qty | ~$ |
+|---|---|---|---|
+| Manual long-travel slide pot, 10 kΩ linear, ~85–90 mm travel, body ≤118 mm (**VERIFY**) | DigiKey/Mouser (Bourns PTB-class) or Soundwell | 1 (+1 spare) | 4–8 |
+| N20 micro gearmotor, 6 V, low ratio (≤30:1) — backdrivable | Amazon/Pololu | 2 (spare) | 8 |
+| GT2 16T pulleys ×2 + GT2 belt (200 mm loop) | printer-parts vendors | 1 set | 6 |
+| Slip-clutch hub | 3D-printed (design ours) | — | — |
 
-- **Buy 1 first, test, then buy 9** (per the BOM's sourcing advice).
-- Alternate if stock is thin: **Bourns PSM60-081A-103B2** (60 mm motorized, similar
-  footprint — re-verify touch-sense wiring).
-- ⚠️ Do **not** substitute the RSA0N11M9 series — that's the 100 mm-travel version
-  and won't fit the body.
+> **No packaged motorized faders in the build anymore** — the EQ/volume/balance
+> are slim manual pots and seek is the custom drive. Bench-prove the slip clutch
+> with these parts before cutting the panel.
+
+## 🛒 Slim pots (EQ ×11 + volume + balance)
+
+| Part | Source | Qty | ~$ |
+|---|---|---|---|
+| Slim slide pot, 45 mm travel, 10 kΩ linear (9 mm body) | DigiKey/Mouser/Soundwell | 13 (11 EQ + vol + spare) | 20–30 |
+| Mini slide pot, 20 mm travel (balance) | same | 1 | 2 |
 
 ## 🛒 Geekworm — power
 

@@ -127,9 +127,9 @@ bx, by = mm(114, 42)
 canvas.blit(bd, (bx - bs.get_width() // 2 + 1, by - bs.get_height() // 2 + 1))
 canvas.blit(bs, (bx - bs.get_width() // 2, by - bs.get_height() // 2))
 
-# SEEK — the motorized one, big cap
-sk = hslot(32.5, 58.5, 62, 0.17, 34, 52)
-engrave("SEEK", mm(14, 57)[0], mm(57, 57)[1] + 2, F_ENG)
+# SEEK — custom belt-drive: near-full-width slot
+sk = hslot(20, 58.5, 87, 0.14, 34, 52)
+engrave("SEEK", mm(12, 53)[0], mm(52, 53)[1], F_ENG)
 
 # transport keycaps
 def keycap(x_mm, y_mm, w_mm, h_mm, glyph, gcol=AMB):

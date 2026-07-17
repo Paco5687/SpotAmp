@@ -140,12 +140,32 @@ Implementation notes:
   `DISP` data already carries everything; the region map is a table in
   `firmware/src/config.h` when formalized).
 
-## Seek fader travel (decision note)
+## The seek mechanism (owner's design, 2026-07-17): custom belt drive
 
-60 mm travel (RS60N, current) keeps the panel at 127 mm. The 100 mm option
-(RSA0N11M9A0K, body **146.5 mm**, mounts 120 mm) would span ~65 % of the face —
-very Yanko — but forces **~157 mm panel width** and drops the screen to ~46 % of
-the face. Decided by the owner's print; default = 60 mm at 127.
+Off-the-shelf motorized faders package the motor IN-LINE with the track — the
+RS60N wastes 46 mm of length beyond its travel, and the 100 mm RSA0N is 146.5 mm
+long. **We build the drive ourselves instead** (this is how flying faders work
+internally anyway):
+
+- **Panel part**: a slim **manual long-travel slide pot** (~85–90 mm travel,
+  body ≤ 118 mm — VERIFY candidate part) → the slot spans ~70 % of the face at
+  the 127 mm width. Wiper = position feedback (mux, as always); metal knob =
+  touch electrode (MPR121).
+- **Drive**: micro gearmotor (N20-class) + 2× GT2 16T pulleys + a GT2 belt loop
+  behind the panel, with a printed clamp tying the belt to the fader lever — a
+  miniature 3D-printer axis. Motor mounts beside/behind; envelope ~120 × 14 mm
+  (REF box in the cut drawing).
+- **Electronics/firmware unchanged**: DRV8833 + the existing PID loop drive it
+  identically to a packaged motorized fader.
+- ⚠️ **The critical detail — backdrivability**: the user must be able to grab
+  the fader anytime. High-ratio gearmotors lock. Prototype in this order:
+  (1) **slip-clutch pulley** — printed friction hub on the motor pulley (what
+  ALPS does internally); (2) low-ratio (≤30:1) or coreless motor that
+  backdrives freely; (3) touch-triggered release as backup. **Bench-prove the
+  clutch before committing the panel.**
+- Benefits: −$20 ALPS fader → +~$15 of motor/belt/pulleys, every mechanical
+  part printable now and machinable later, and the seek slot finally matches
+  the concept's proportions.
 
 ## Knobs & finish
 

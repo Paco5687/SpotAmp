@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461238.9774189815
+2461238.98125
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461238.9774189815
+2461238.98125
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-106
+105
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{717A817C-E772-4947-BF98-9336BE274810}
+{C02AA537-6369-4B81-B6B8-86D88E8245FA}
   9
 $VERSIONGUID
   2
-{E20B4C3E-B08E-4F0E-8282-9EDDC5182EE8}
+{000977A1-208B-47BD-96D7-A35BC274025F}
   9
 $EXTNAMES
 290
@@ -3253,7 +3253,7 @@ ACAD
   0
 APPID
   5
-103
+102
 330
 3
 100
@@ -3267,7 +3267,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-104
+103
 330
 3
 100
@@ -5705,21 +5705,21 @@ AcDbPolyline
  70
 1
  10
-32.5
+20.0
  20
-189.0
+188.75
  10
-94.5
+107.0
  20
-189.0
+188.75
  10
-94.5
+107.0
  20
-186.0
+186.25
  10
-32.5
+20.0
  20
-186.0
+186.25
   0
 LWPOLYLINE
   5
@@ -5737,21 +5737,21 @@ AcDbPolyline
  70
 1
  10
-10.25
+3.5
  20
-196.75
+194.5
  10
-116.75
+123.5
  20
-196.75
+194.5
  10
-116.75
+123.5
  20
-178.25
+180.5
  10
-10.25
+3.5
  20
-178.25
+180.5
   0
 LWPOLYLINE
   5
@@ -7025,13 +7025,13 @@ HOLES
 100
 AcDbCircle
  10
-23.5
+14.0
  20
 187.5
  30
 0.0
  40
-1.7
+1.45
   0
 CIRCLE
   5
@@ -7045,13 +7045,13 @@ HOLES
 100
 AcDbCircle
  10
-103.5
+113.0
  20
 187.5
  30
 0.0
  40
-1.7
+1.45
   0
 CIRCLE
   5
@@ -7721,33 +7721,9 @@ ENGRAVE
 100
 AcDbText
  10
-32.5
- 20
-181.0
- 30
-0.0
- 40
-2.5
-  1
-
-100
-AcDbText
-  0
-TEXT
-  5
-E8
-330
-17
-100
-AcDbEntity
-  8
-ENGRAVE
-100
-AcDbText
- 10
 10.0
  20
-184.0
+192.5
  30
 0.0
  40
@@ -7759,7 +7735,7 @@ AcDbText
   0
 TEXT
   5
-E9
+E8
 330
 17
 100
@@ -7783,7 +7759,7 @@ AcDbText
   0
 TEXT
   5
-EA
+E9
 330
 17
 100
@@ -7807,7 +7783,7 @@ AcDbText
   0
 TEXT
   5
-EB
+EA
 330
 17
 100
@@ -7831,7 +7807,7 @@ AcDbText
   0
 TEXT
   5
-EC
+EB
 330
 17
 100
@@ -7855,7 +7831,7 @@ AcDbText
   0
 TEXT
   5
-ED
+EC
 330
 17
 100
@@ -7879,7 +7855,7 @@ AcDbText
   0
 TEXT
   5
-EE
+ED
 330
 17
 100
@@ -7903,7 +7879,7 @@ AcDbText
   0
 TEXT
   5
-EF
+EE
 330
 17
 100
@@ -7927,7 +7903,7 @@ AcDbText
   0
 TEXT
   5
-F0
+EF
 330
 17
 100
@@ -7951,7 +7927,7 @@ AcDbText
   0
 TEXT
   5
-F1
+F0
 330
 17
 100
@@ -7975,7 +7951,7 @@ AcDbText
   0
 TEXT
   5
-F2
+F1
 330
 17
 100
@@ -7999,7 +7975,7 @@ AcDbText
   0
 TEXT
   5
-F3
+F2
 330
 17
 100
@@ -8023,7 +7999,7 @@ AcDbText
   0
 TEXT
   5
-F4
+F3
 330
 17
 100
@@ -8047,7 +8023,7 @@ AcDbText
   0
 TEXT
   5
-F5
+F4
 330
 17
 100
@@ -8071,7 +8047,7 @@ AcDbText
   0
 TEXT
   5
-F6
+F5
 330
 17
 100
@@ -8095,7 +8071,7 @@ AcDbText
   0
 TEXT
   5
-F7
+F6
 330
 17
 100
@@ -8119,7 +8095,7 @@ AcDbText
   0
 TEXT
   5
-F8
+F7
 330
 17
 100
@@ -8143,7 +8119,7 @@ AcDbText
   0
 TEXT
   5
-F9
+F8
 330
 17
 100
@@ -8167,7 +8143,7 @@ AcDbText
   0
 TEXT
   5
-FA
+F9
 330
 17
 100
@@ -8191,7 +8167,7 @@ AcDbText
   0
 TEXT
   5
-FB
+FA
 330
 17
 100
@@ -8215,7 +8191,7 @@ AcDbText
   0
 TEXT
   5
-FC
+FB
 330
 17
 100
@@ -8239,7 +8215,7 @@ AcDbText
   0
 TEXT
   5
-FD
+FC
 330
 17
 100
@@ -8263,7 +8239,7 @@ AcDbText
   0
 TEXT
   5
-FE
+FD
 330
 17
 100
@@ -8287,7 +8263,7 @@ AcDbText
   0
 TEXT
   5
-FF
+FE
 330
 17
 100
@@ -8311,7 +8287,7 @@ AcDbText
   0
 TEXT
   5
-100
+FF
 330
 17
 100
@@ -8335,7 +8311,7 @@ AcDbText
   0
 TEXT
   5
-101
+100
 330
 17
 100
@@ -8353,13 +8329,13 @@ AcDbText
  40
 2.8
   1
-YANKO-FAITHFUL — 127 x 246 mm — WinAmp stack order, 4-aperture OLED, PRE+10 slim pots, 1 motor (seek)
+YANKO-FAITHFUL — 127 x 246 mm — 4-aperture OLED, PRE+10 slim pots, BELT-DRIVE 85mm seek (custom mech)
 100
 AcDbText
   0
 TEXT
   5
-102
+101
 330
 17
 100
@@ -9471,7 +9447,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-105
+104
   0
 DICTIONARYVAR
   5
@@ -9483,7 +9459,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-07-17T03:27:29.704576+00:00
+1.4.4 @ 2026-07-17T03:33:00.850165+00:00
   0
 VISUALSTYLE
   5
@@ -10187,7 +10163,7 @@ X-Ray
   0
 DICTIONARYVAR
   5
-105
+104
 330
 2D
 100
@@ -10195,7 +10171,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-07-17T03:27:29.727590+00:00
+1.4.4 @ 2026-07-17T03:33:00.872200+00:00
   0
 ENDSEC
   0
