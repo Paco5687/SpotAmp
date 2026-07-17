@@ -4,7 +4,7 @@
 
 To be written up as the physical build comes together. Planned sections:
 
-- [ ] Front-panel layout (portrait, ~127 × 200 mm) and cutouts
+- [ ] Front-panel layout (portrait, 175 × 280 mm) and cutouts — see hardware/cad/
 - [ ] RP2040 pin map, mux wiring, motor-driver hookup
 - [ ] Motorized fader wiring (motor / wiper / touch), one per fader
 - [ ] Pi 4 B + DSI LCD + I2S DAC stack
