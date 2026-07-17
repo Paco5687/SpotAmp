@@ -1,168 +1,154 @@
-"""SpotAmp compact (127x300) — product-style front elevation render.
-
-Draws the physical device: anodized body, lit amber OLED, aluminum fader caps,
-and the REAL multi-view UI rendered onto the screen. 4 px = 1 mm.
-"""
-import os, sys, math
+"""SpotAmp — Yanko-faithful product render (127x246, one motor, slim pots)."""
+import os, sys, math, random
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 sys.path.insert(0, r"C:\Users\VNET\Documents\repos\winamp-player\pi")
-
 import pygame
 pygame.init()
 
-S = 4                      # px per mm
-PW, PH = 127 * S, 252 * S  # panel
-CW, CH = PW + 220, PH + 260
-OX, OY = 110, 110          # panel origin on canvas
-
+S = 4
+PW, PH = 127 * S, 246 * S
+CW, CH = PW + 220, PH + 240
+OX, OY = 110, 100
 canvas = pygame.Surface((CW, CH))
 
-# ---------- studio background ------------------------------------------------ #
 for y in range(CH):
-    t = y / CH
-    g = int(214 - 38 * t)
+    g = int(216 - 40 * y / CH)
     pygame.draw.line(canvas, (g, g + 2, g + 6), (0, y), (CW, y))
-# floor shadow
 sh = pygame.Surface((CW, 130), pygame.SRCALPHA)
-pygame.draw.ellipse(sh, (20, 20, 26, 90), (OX - 40, 30, PW + 80, 80))
+pygame.draw.ellipse(sh, (18, 18, 24, 95), (OX - 40, 30, PW + 80, 80))
 canvas.blit(sh, (0, OY + PH - 40))
 
 def rr(surf, color, rect, rad, width=0):
     pygame.draw.rect(surf, color, rect, width, border_radius=rad)
 
-# ---------- body -------------------------------------------------------------- #
-# drop shadow
-for i, a in ((14, 26), (9, 40), (5, 60)):
+for i, a in ((14, 26), (9, 42), (5, 62)):
     shd = pygame.Surface((PW + 2 * i, PH + 2 * i), pygame.SRCALPHA)
     rr(shd, (10, 10, 14, a), shd.get_rect(), 26 + i)
     canvas.blit(shd, (OX - i, OY - i + 6))
-# anodized front plate (vertical sheen)
 plate = pygame.Surface((PW, PH), pygame.SRCALPHA)
 for y in range(PH):
-    t = y / PH
-    base = 34 + int(10 * math.sin(t * math.pi))       # subtle sheen band
-    rrcol = (base, base + 1, base + 4)
-    pygame.draw.line(plate, rrcol, (0, y), (PW, y))
+    base = 33 + int(9 * math.sin((y / PH) * math.pi))
+    pygame.draw.line(plate, (base, base, base + 3), (0, y), (PW, y))
 mask = pygame.Surface((PW, PH), pygame.SRCALPHA)
-rr(mask, (255, 255, 255), mask.get_rect(), 24)
+rr(mask, (255, 255, 255), mask.get_rect(), 22)
 plate.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MIN)
 canvas.blit(plate, (OX, OY))
-rr(canvas, (74, 78, 86), (OX, OY, PW, PH), 24, 2)          # edge
-rr(canvas, (16, 17, 20), (OX + 2, OY + 2, PW - 4, PH - 4), 22, 1)
+rr(canvas, (70, 73, 80), (OX, OY, PW, PH), 22, 2)
 
-def mm(x, y):  # panel mm -> canvas px
-    return (OX + int(x * S), OY + int(y * S))
+def mm(x, y): return (OX + int(x * S), OY + int(y * S))
+def mmr(x, y, w, h): return pygame.Rect(OX + int(x * S), OY + int(y * S), int(w * S), int(h * S))
 
-def mmr(x, y, w, h):
-    return pygame.Rect(OX + int(x * S), OY + int(y * S), int(w * S), int(h * S))
+F_ENG = pygame.font.SysFont("segoeui", 12)
+F_TINY = pygame.font.SysFont("segoeui", 10)
+F_TIME = pygame.font.SysFont("consolas", 30, bold=True)
+F_OLED = pygame.font.SysFont("consolas", 14, bold=True)
+F_PILL = pygame.font.SysFont("consolas", 12, bold=True)
+AMB, AMB_D = (255, 172, 52), (140, 90, 24)
 
-F_ENG = pygame.font.SysFont("segoeui", 13)
-F_ENG_S = pygame.font.SysFont("segoeui", 11)
-F_OLED = pygame.font.SysFont("consolas", 26, bold=True)
-F_OLED_S = pygame.font.SysFont("consolas", 13, bold=True)
-
-def engrave(text, cx, y, font=F_ENG, col=(148, 152, 160)):
+def engrave(text, cx, y, font=F_TINY, col=(150, 152, 158)):
     s = font.render(text, True, col)
-    d = font.render(text, True, (12, 12, 14))
-    canvas.blit(d, (cx - s.get_width() // 2 + 1, y + 1))
+    canvas.blit(font.render(text, True, (10, 10, 12)), (cx - s.get_width() // 2 + 1, y + 1))
     canvas.blit(s, (cx - s.get_width() // 2, y))
 
-# ---------- OLED readout ------------------------------------------------------ #
-o = mmr(9, 7.5, 78, 20.5)
-rr(canvas, (6, 7, 8), o.inflate(10, 10), 8)                 # glass bezel
-rr(canvas, (14, 10, 4), o, 4)
-amber, amber_d = (255, 176, 56), (150, 96, 24)
-t1 = F_OLED.render("0:42", True, amber)
-canvas.blit(t1, (o.x + 12, o.y + 8))
-t2 = F_OLED_S.render("M83 - MIDNIGHT CITY", True, amber)
-canvas.blit(t2, (o.x + 110, o.y + 14))
-t3 = F_OLED_S.render("320kbps 44kHz", True, amber_d)
-canvas.blit(t3, (o.x + 110, o.y + 34))
-import random
-random.seed(7)
-for i in range(26):                                          # mini spectrum
-    h = random.randint(4, 22)
-    pygame.draw.rect(canvas, amber_d if i % 3 else amber,
-                     (o.x + 12 + i * 9, o.bottom - 10 - h, 6, h))
+def well(rect, rad=6):
+    rr(canvas, (12, 13, 15), rect.inflate(8, 8), rad + 3)
+    rr(canvas, (58, 60, 66), rect.inflate(8, 8), rad + 3, 1)
+    rr(canvas, (7, 5, 2), rect, rad)
 
-# ---------- right key stack ---------------------------------------------------- #
-def key(rect, label):
-    rr(canvas, (12, 13, 15), rect.inflate(6, 6), 8)
-    for i in range(rect.h):
-        t = i / rect.h
-        c = int(58 - 22 * t)
-        pygame.draw.line(canvas, (c, c + 1, c + 3),
-                         (rect.x, rect.y + i), (rect.right, rect.y + i))
-    pygame.draw.line(canvas, (96, 100, 108), (rect.x + 3, rect.y + 2),
-                     (rect.right - 3, rect.y + 2), 2)
-    s = F_ENG_S.render(label, True, (200, 204, 210))
-    canvas.blit(s, (rect.centerx - s.get_width() // 2,
-                    rect.centery - s.get_height() // 2))
+# ---------------- OLED cluster: four lit apertures over one display ----------- #
+vis = mmr(8, 7.5, 26, 18)
+well(vis)
+canvas.blit(F_TIME.render("0:42", True, AMB), (vis.x + 8, vis.y + 4))
+random.seed(11)
+for i in range(15):
+    h = random.randint(5, 26)
+    pygame.draw.rect(canvas, AMB if i % 3 else AMB_D,
+                     (vis.x + 6 + i * 6, vis.bottom - 6 - h, 4, h))
+title = mmr(37.5, 7.5, 46.5, 7.5)
+well(title, 10)
+canvas.blit(F_OLED.render("M83 - MIDNIGHT CITY", True, AMB), (title.x + 8, title.y + 6))
+for px, txt in ((37.5, "320"), (53.5, "44")):
+    p = mmr(px, 17.5, 13, 6)
+    well(p, 8)
+    s = F_PILL.render(txt, True, AMB)
+    canvas.blit(s, (p.centerx - s.get_width() // 2, p.centery - s.get_height() // 2))
+engrave("KBPS", int(mm(44, 25.5)[0]), mm(44, 25.5)[1], F_TINY)
+engrave("KHZ", int(mm(60, 25.5)[0]), mm(60, 25.5)[1], F_TINY)
 
-for i, lab in enumerate(["SHUFFLE", "LOOP", "PRESET"]):
-    key(mmr(94, 8 + i * 13, 28, 9), lab)
+# view toggles (EQ/PL style)
+for i, lab in enumerate(["NOW", "PL", "QUE"]):
+    c = mm(98 + i * 11, 13)
+    pygame.draw.circle(canvas, (10, 11, 13), c, 14)
+    for r_ in range(11, 0, -1):
+        col = int(34 + 30 * (1 - r_ / 11))
+        pygame.draw.circle(canvas, (col, col, col + 3), (c[0] - 1, c[1] - 2), r_)
+    pygame.draw.circle(canvas, (110, 113, 120), c, 12, 1)
+    if i == 0:
+        pygame.draw.circle(canvas, AMB, (c[0], c[1] + 7), 2)   # active LED
+    engrave(lab, c[0], c[1] + 20)
 
-# ---------- transport ----------------------------------------------------------- #
-GLYPHS = ["◄◄", "►", "I I", "■", "►►"]
-for i, g in enumerate(GLYPHS):
-    c = mm(12 + i * 17, 39)
-    pygame.draw.circle(canvas, (10, 11, 13), c, 30)
-    for r_ in range(27, 0, -1):                            # domed cap
-        t = r_ / 27
-        col = int(30 + 34 * (1 - t))
-        pygame.draw.circle(canvas, (col, col + 2, col + 5), (c[0] - 3, c[1] - 3), r_)
-    pygame.draw.circle(canvas, (120, 124, 132), c, 27, 2)
-    s = F_ENG_S.render(g, True, (255, 176, 56))
-    canvas.blit(s, (c[0] - s.get_width() // 2, c[1] - s.get_height() // 2))
-
-# ---------- fader helper --------------------------------------------------------- #
-def alu_cap(cx, cy, w, h):
-    cap = pygame.Rect(0, 0, w, h)
-    cap.center = (cx, cy)
-    rr(canvas, (8, 9, 10), cap.inflate(8, 8), 6)
-    for i in range(cap.w):
-        t = abs(i / cap.w - 0.5) * 2
-        c = int(196 - 90 * t)
-        pygame.draw.line(canvas, (c, c, c + 2), (cap.x + i, cap.y), (cap.x + i, cap.bottom))
-    pygame.draw.rect(canvas, (30, 30, 34), cap, 2, border_radius=4)
-    pygame.draw.line(canvas, (255, 120, 40), (cap.x + 4, cap.centery), (cap.right - 4, cap.centery), 3)
-
-
-def orange_cap(cx, cy, w, h):
+# ---------------- ribbed orange cap ------------------------------------------- #
+def rib_cap(cx, cy, w, h, horiz=True):
     cap = pygame.Rect(0, 0, w, h)
     cap.center = (cx, cy)
     rr(canvas, (8, 9, 10), cap.inflate(6, 6), 5)
     for i in range(cap.h):
         t = i / cap.h
-        c = (int(255 - 90 * t), int(120 - 55 * t), int(48 - 26 * t))
-        pygame.draw.line(canvas, c, (cap.x, cap.y + i), (cap.right, cap.y + i))
-    pygame.draw.rect(canvas, (60, 26, 10), cap, 2, border_radius=4)
-    pygame.draw.line(canvas, (30, 12, 5), (cap.x + 3, cap.centery), (cap.right - 3, cap.centery), 2)
+        pygame.draw.line(canvas, (int(252 - 96 * t), int(116 - 58 * t), int(44 - 24 * t)),
+                         (cap.x, cap.y + i), (cap.right, cap.y + i))
+    pygame.draw.rect(canvas, (70, 30, 12), cap, 2, border_radius=4)
+    if horiz:
+        for fx in range(cap.x + 5, cap.right - 4, 6):
+            pygame.draw.line(canvas, (120, 48, 18), (fx, cap.y + 3), (fx, cap.bottom - 3), 2)
+    else:
+        for fy in range(cap.y + 5, cap.bottom - 4, 6):
+            pygame.draw.line(canvas, (120, 48, 18), (cap.x + 3, fy), (cap.right - 3, fy), 2)
 
-def small_hpot(cx_mm, cy_mm, pos, label):
-    slot = pygame.Rect(0, 0, int(47 * S), int(2.5 * S))
-    slot.center = (OX + int(cx_mm * S), OY + int(cy_mm * S))
-    rr(canvas, (8, 9, 11), slot.inflate(6, 6), 5)
-    rr(canvas, (2, 2, 3), slot, 4)
-    orange_cap(slot.x + int(slot.w * pos), slot.centery, 22, 44)
-    engrave(label, slot.centerx, slot.bottom + 10, F_ENG_S)
+def hslot(x0_mm, cy_mm, len_mm, pos, capw=26, caph=40):
+    slot = pygame.Rect(mm(x0_mm, cy_mm - 1.25), (int(len_mm * S), int(2.5 * S)))
+    well(slot, 5)
+    rib_cap(slot.x + int(slot.w * pos), slot.centery, capw, caph)
+    return slot
 
-def hslot(x0, x1, cy, pos, label, label_cx):
-    slot = pygame.Rect(mm(x0, cy - 1.5), ((x1 - x0) * S, 3 * S))
-    rr(canvas, (8, 9, 11), slot.inflate(6, 6), 6)
-    rr(canvas, (2, 2, 3), slot, 4)
-    cx = slot.x + int(slot.w * pos)
-    alu_cap(cx, slot.centery, 30, 46)
-    engrave(label, OX + int(label_cx * S), slot.bottom + 12, F_ENG_S)
+# volume / balance / bolt
+vslot = hslot(10, 42, 47, 0.6)
+engrave("-", vslot.x - 12, vslot.y - 4, F_ENG)
+engrave("+", vslot.right + 12, vslot.y - 4, F_ENG)
+engrave("VOLUME", vslot.centerx, vslot.bottom + 12)
+bslot = hslot(72, 42, 22, 0.5, 20, 34)
+engrave("L", bslot.x - 10, bslot.y - 4, F_ENG)
+engrave("R", bslot.right + 10, bslot.y - 4, F_ENG)
+engrave("BALANCE", bslot.centerx, bslot.bottom + 12)
+# lightning bolt badge
+bc = mm(114, 42)
+pygame.draw.circle(canvas, (14, 15, 17), bc, 22)
+pygame.draw.circle(canvas, (95, 98, 105), bc, 22, 2)
+bolt = [(bc[0] + 4, bc[1] - 14), (bc[0] - 8, bc[1] + 2), (bc[0] - 1, bc[1] + 2),
+        (bc[0] - 4, bc[1] + 14), (bc[0] + 8, bc[1] - 2), (bc[0] + 1, bc[1] - 2)]
+pygame.draw.polygon(canvas, (255, 140, 40), bolt)
 
-small_hpot(36, 54, 0.62, "VOLUME")
-small_hpot(94, 54, 0.5, "L · BAL · R")
+# SEEK — the motorized one, big cap
+sk = hslot(32.5, 58.5, 62, 0.17, 34, 52)
+engrave("SEEK", mm(14, 57)[0], mm(57, 57)[1] + 2, F_ENG)
 
-# ---------- view keys ------------------------------------------------------------- #
-for i, lab in enumerate(["NOW PLAYING", "PLAYLISTS", "QUEUE"]):
-    key(mmr(12 + i * 38, 66, 30, 10), lab)
+# transport keycaps
+def keycap(x_mm, y_mm, w_mm, h_mm, glyph, gcol=AMB):
+    k = mmr(x_mm, y_mm, w_mm, h_mm)
+    rr(canvas, (10, 11, 13), k.inflate(6, 6), 7)
+    for i in range(k.h):
+        c = int(60 - 24 * i / k.h)
+        pygame.draw.line(canvas, (c, c + 1, c + 4), (k.x, k.y + i), (k.right, k.y + i))
+    pygame.draw.line(canvas, (100, 104, 112), (k.x + 3, k.y + 2), (k.right - 3, k.y + 2), 2)
+    rr(canvas, (26, 27, 30), k, 6, 1)
+    s = F_ENG.render(glyph, True, gcol)
+    canvas.blit(s, (k.centerx - s.get_width() // 2, k.centery - s.get_height() // 2))
 
-# ---------- screen: render the REAL UI -------------------------------------------- #
+for i, g in enumerate(["◄◄", "►", "▍▍", "■", "►►"]):
+    keycap(9 + i * 15, 69, 13, 9, g)
+keycap(85, 69, 20, 9, "SHUFFLE", (190, 193, 200))
+keycap(107.5, 69, 15, 9, "LOOP", (190, 193, 200))
+
+# ---------------- screen ------------------------------------------------------- #
 from spotamp.models import PlayerState, Track, PlaybackStatus
 from spotamp.library import BrowseState
 from spotamp.ui.screen import ScreenUI
@@ -170,34 +156,31 @@ scr_src = pygame.display.set_mode((720, 720))
 st = PlayerState(); st.status = PlaybackStatus.PLAYING
 st.track = Track("Midnight City", "M83", "Hurry Up, We're Dreaming", 241000)
 st.position_ms = 42000; st.battery_percent = 72.0
-st.queue = [Track("Digital Love", "Daft Punk", "Discovery", 301000)]
 ui = ScreenUI(scr_src, on_action=lambda *a, **k: None)
 ui.update(st, 0.03); ui.draw(st, BrowseState())
 shot = pygame.transform.smoothscale(scr_src.copy(), (int(73 * S) - 8, int(73 * S) - 8))
-
-win = mmr(27, 82, 73, 73)
-rr(canvas, (10, 11, 13), win.inflate(26, 26), 12)            # chamfered surround
-rr(canvas, (52, 55, 62), win.inflate(26, 26), 12, 2)
+win = mmr(27, 86, 73, 73)
+rr(canvas, (10, 11, 13), win.inflate(26, 26), 12)
+rr(canvas, (56, 59, 66), win.inflate(26, 26), 12, 2)
 rr(canvas, (0, 0, 0), win.inflate(8, 8), 4)
 canvas.blit(shot, (win.x + 4, win.y + 4))
-engrave("S P O T A M P", win.centerx, win.bottom + 26, F_ENG_S, (110, 114, 122))
+engrave("S P O T A M P", win.centerx, win.bottom + 24, F_TINY, (108, 112, 120))
 
-# ---------- seek -------------------------------------------------------------------- #
-hslot(32.5, 94.5, 172, 0.17, "SEEK", 63.5)
-
-# ---------- EQ bank: PRE + 10 classic bands, slim pots (Yanko) --------------------- #
+# ---------------- EQ module ------------------------------------------------------ #
+keycap(10, 168, 16, 8, "ON", (190, 193, 200))
+keycap(29, 168, 16, 8, "AUTO", (190, 193, 200))
+keycap(98, 168, 24, 8, "PRESET", AMB)
+for lab, ymm in (("+12", 183), ("0", 205.5), ("-12", 228)):
+    engrave(lab, mm(5.5, ymm)[0], mm(5.5, ymm)[1], F_TINY, (120, 122, 128))
 levels = [0.62, 0.45, 0.5, 0.58, 0.63, 0.66, 0.62, 0.55, 0.5, 0.47, 0.44]
 bands = ["PRE", "60", "170", "310", "600", "1K", "3K", "6K", "12K", "14K", "16K"]
 for i, (lab, lv) in enumerate(zip(bands, levels)):
-    cx_mm = 9.5 + i * 10.8
+    cx = OX + int((14.5 + i * 10.4) * S)
     slot = pygame.Rect(0, 0, int(2.5 * S), int(47 * S))
-    slot.center = (OX + int(cx_mm * S), OY + int(213.5 * S))
-    rr(canvas, (8, 9, 11), slot.inflate(6, 6), 5)
-    rr(canvas, (2, 2, 3), slot, 4)
-    cy = slot.y + int(slot.h * (1 - lv))
-    orange_cap(slot.centerx, cy, 34, 17)
-    engrave(lab, slot.centerx, slot.bottom + 8, F_ENG_S,
-            (255, 176, 56) if lab == "PRE" else (140, 144, 152))
+    slot.center = (cx, OY + int(206.5 * S))
+    well(slot, 5)
+    rib_cap(cx, slot.y + int(slot.h * (1 - lv)), 30, 15, horiz=False)
+    engrave(lab, cx, slot.bottom + 8, F_TINY, AMB if lab == "PRE" else (140, 143, 150))
 
 pygame.image.save(canvas, r"C:\Users\VNET\AppData\Local\Temp\claude\C--Users-VNET-Documents-repos-winamp-player\ef0351fc-2012-48d9-b4b6-d26a47a866f1\scratchpad\product_render.png")
 print("saved")
