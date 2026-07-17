@@ -126,6 +126,27 @@ portable between rooms, not pocket-portable. Design decisions:
 - The rear tray + stand get their own generated drawing when we do the body CAD
   (the parametric generator extends to it — same source of truth as the panel).
 
+## The OLED aperture cluster (how the "multiple displays" work)
+
+One 256×64 OLED sits behind **four sculpted apertures** (time+spectrum window,
+title strip, two kbps/kHz pills) — the panel mask turns one display into four.
+Implementation notes:
+- The apertures must land inside the OLED's **76.78 × 19.18 mm active area**;
+  positions in `cad/generate_panel.py` are derived from it. Mask alignment
+  tolerance ±0.5 mm — locate the OLED with pins/bosses, not adhesive guesswork.
+- Put a **smoked/amber acrylic layer** (~1 mm) behind the apertures so off
+  pixels vanish into black and the windows read as separate lit instruments.
+- Firmware renders each element at fixed pixel regions matching the mask (the
+  `DISP` data already carries everything; the region map is a table in
+  `firmware/src/config.h` when formalized).
+
+## Seek fader travel (decision note)
+
+60 mm travel (RS60N, current) keeps the panel at 127 mm. The 100 mm option
+(RSA0N11M9A0K, body **146.5 mm**, mounts 120 mm) would span ~65 % of the face —
+very Yanko — but forces **~157 mm panel width** and drops the screen to ~46 % of
+the face. Decided by the owner's print; default = 60 mm at 127.
+
 ## Knobs & finish
 
 - **Final build**: aluminum fader caps (T-bar or rectangular, for the ALPS 9-T

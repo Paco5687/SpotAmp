@@ -52,7 +52,6 @@
 <circle cx="60.5" cy="42.0" r="1.2" fill="none" stroke="#c60" stroke-width="0.35"/>
 <circle cx="68.5" cy="42.0" r="1.2" fill="none" stroke="#c60" stroke-width="0.35"/>
 <circle cx="97.5" cy="42.0" r="1.2" fill="none" stroke="#c60" stroke-width="0.35"/>
-<circle cx="114.0" cy="42.0" r="5.0" fill="none" stroke="#06c" stroke-width="0.2"/>
 <circle cx="23.5" cy="58.5" r="1.7" fill="none" stroke="#c60" stroke-width="0.35"/>
 <circle cx="103.5" cy="58.5" r="1.7" fill="none" stroke="#c60" stroke-width="0.35"/>
 <circle cx="14.5" cy="179.5" r="1.2" fill="none" stroke="#c60" stroke-width="0.35"/>
@@ -85,7 +84,7 @@
 <text x="59.5" y="40.5" font-size="2.5" fill="#06c">+</text>
 <text x="66.0" y="40.5" font-size="2.0" fill="#06c">L</text>
 <text x="100.0" y="40.5" font-size="2.0" fill="#06c">R</text>
-<text x="111.0" y="47.5" font-size="2.2" fill="#06c">SA</text>
+<text x="106.0" y="40.0" font-size="2.8" fill="#06c">SpotAmp</text>
 <text x="32.5" y="65.0" font-size="2.5" fill="#06c"></text>
 <text x="10.0" y="62.0" font-size="1.8" fill="#06c">SEEK</text>
 <text x="10.5" y="82.0" font-size="2.0" fill="#06c">|<</text>

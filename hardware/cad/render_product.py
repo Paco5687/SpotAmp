@@ -119,13 +119,13 @@ bslot = hslot(72, 42, 22, 0.5, 20, 34)
 engrave("L", bslot.x - 10, bslot.y - 4, F_ENG)
 engrave("R", bslot.right + 10, bslot.y - 4, F_ENG)
 engrave("BALANCE", bslot.centerx, bslot.bottom + 12)
-# lightning bolt badge
-bc = mm(114, 42)
-pygame.draw.circle(canvas, (14, 15, 17), bc, 22)
-pygame.draw.circle(canvas, (95, 98, 105), bc, 22, 2)
-bolt = [(bc[0] + 4, bc[1] - 14), (bc[0] - 8, bc[1] + 2), (bc[0] - 1, bc[1] + 2),
-        (bc[0] - 4, bc[1] + 14), (bc[0] + 8, bc[1] - 2), (bc[0] + 1, bc[1] - 2)]
-pygame.draw.polygon(canvas, (255, 140, 40), bolt)
+# brand engrave (bolt removed — SpotAmp, not WinAmp)
+F_BRAND = pygame.font.SysFont("segoeui", 17, bold=True, italic=True)
+bs = F_BRAND.render("SpotAmp", True, (168, 172, 180))
+bd = F_BRAND.render("SpotAmp", True, (10, 10, 12))
+bx, by = mm(114, 42)
+canvas.blit(bd, (bx - bs.get_width() // 2 + 1, by - bs.get_height() // 2 + 1))
+canvas.blit(bs, (bx - bs.get_width() // 2, by - bs.get_height() // 2))
 
 # SEEK — the motorized one, big cap
 sk = hslot(32.5, 58.5, 62, 0.17, 34, 52)
@@ -164,7 +164,7 @@ rr(canvas, (10, 11, 13), win.inflate(26, 26), 12)
 rr(canvas, (56, 59, 66), win.inflate(26, 26), 12, 2)
 rr(canvas, (0, 0, 0), win.inflate(8, 8), 4)
 canvas.blit(shot, (win.x + 4, win.y + 4))
-engrave("S P O T A M P", win.centerx, win.bottom + 24, F_TINY, (108, 112, 120))
+
 
 # ---------------- EQ module ------------------------------------------------------ #
 keycap(10, 168, 16, 8, "ON", (190, 193, 200))
