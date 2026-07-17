@@ -25,15 +25,14 @@ three facts that change the body:
 | **B. 5 bands + preamp** | 6 × 20 = 120 ✓ fits 127 | fewer bands; protocol/firmware are per-band so it's a config change |
 | **C. Reduced build** (motorized volume + seek only, slim non-motorized pots for EQ) | narrow pots ~10 mm pitch ✓ | loses the animated-EQ showpiece |
 
-> **FINAL (2026-07-17): 175 × 280 × 32 mm.** Decided after 1:1 paper tests of five
-> layouts (A + concepts B–E, see git history of cad/concepts/): with a 73 mm
-> screen window, the panel stays 7-bands-wide so the screen remains the
-> centerpiece. The DXF in [cad/](cad/)
-> proves this closes with real clearances. If that's too big after holding a
-> cardboard mockup, the compact fallback is **non-motorized 45 mm slide pots for
-> the EQ** (panel shrinks to roughly 150 × 200) — the generator is parametric, so
-> the variant is a constants change, and the firmware already treats read-only
-> faders as a config difference.
+> **Current direction (2026-07-17, pending 1:1 print approval): the ONE-MOTOR
+> design — 127 × 246 × ~30 mm** (`cad/front-panel-final.*`). EQ/volume/balance
+> use slim non-motorized pots (full classic PRE + 10-band bank fits the beloved
+> 127 mm width); **seek keeps the single motorized RS60N** (song-tracking
+> showpiece). Yanko-faithful details: 4 sculpted apertures over the one OLED,
+> WinAmp stack order, ON/AUTO/PRESET EQ header, ribbed caps, recessed wells.
+> Electronics collapse: no PCA9685s, 1× DRV8833, ~−$220. The earlier 175 × 280
+> all-motorized drawing (`cad/front-panel.*`) is superseded on approval.
 
 ## Design-for-machining rules (apply from the first CAD sketch)
 
