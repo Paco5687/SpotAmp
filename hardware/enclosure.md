@@ -25,7 +25,10 @@ three facts that change the body:
 | **B. 5 bands + preamp** | 6 × 20 = 120 ✓ fits 127 | fewer bands; protocol/firmware are per-band so it's a config change |
 | **C. Reduced build** (motorized volume + seek only, slim non-motorized pots for EQ) | narrow pots ~10 mm pitch ✓ | loses the animated-EQ showpiece |
 
-> Working default: **Option A at 175 × 280 × 32 mm** — the DXF in [cad/](cad/)
+> **FINAL (2026-07-17): 175 × 280 × 32 mm.** Decided after 1:1 paper tests of five
+> layouts (A + concepts B–E, see git history of cad/concepts/): with a 73 mm
+> screen window, the panel stays 7-bands-wide so the screen remains the
+> centerpiece. The DXF in [cad/](cad/)
 > proves this closes with real clearances. If that's too big after holding a
 > cardboard mockup, the compact fallback is **non-motorized 45 mm slide pots for
 > the EQ** (panel shrinks to roughly 150 × 200) — the generator is parametric, so
